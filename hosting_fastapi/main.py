@@ -5,6 +5,8 @@ Plataforma Segura de Venta y Cotización de Hardware Gamer
 """
 
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, HTTPException, Depends, Request, status
 from fastapi.middleware.cors import CORSMiddleware
