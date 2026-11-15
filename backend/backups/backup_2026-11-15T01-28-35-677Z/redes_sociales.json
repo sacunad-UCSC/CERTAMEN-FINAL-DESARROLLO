@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "6af8ed0dc339f8b91f631071",
+    "plataforma": "Instagram",
+    "enlaceUrl": "https://instagram.com/pcstore_cl",
+    "activa": true,
+    "__v": 0,
+    "createdAt": "2026-11-14T23:21:49.694Z",
+    "updatedAt": "2026-11-14T23:21:49.694Z"
+  },
+  {
+    "_id": "6af8ed0dc339f8b91f631072",
+    "plataforma": "Facebook",
+    "enlaceUrl": "https://facebook.com/pcstorechile",
+    "activa": true,
+    "__v": 0,
+    "createdAt": "2026-11-14T23:21:49.694Z",
+    "updatedAt": "2026-11-14T23:21:49.694Z"
+  },
+  {
+    "_id": "6af8ed0dc339f8b91f631073",
+    "plataforma": "WhatsApp",
+    "enlaceUrl": "https://wa.me/56912345678",
+    "activa": true,
+    "__v": 0,
+    "createdAt": "2026-11-14T23:21:49.694Z",
+    "updatedAt": "2026-11-14T23:21:49.694Z"
+  },
+  {
+    "_id": "6af8ed0dc339f8b91f631074",
+    "plataforma": "LinkedIn",
+    "enlaceUrl": "https://linkedin.com/company/pcstore-cl",
+    "activa": true,
+    "__v": 0,
+    "createdAt": "2026-11-14T23:21:49.694Z",
+    "updatedAt": "2026-11-14T23:21:49.694Z"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "_id": "6af8ed0dc339f8b91f63106a",
+    "numeroPedido": "PED-2026-98124",
+    "cliente": {
+      "nombre": "Juan Pérez",
+      "correo": "cliente@ucsc.cl",
+      "telefono": "+56987654321",
+      "rut": "19.876.543-2"
+    },
+    "direccionDespacho": {
+      "calle": "Av. Paicaví 3000, Depto 402",
+      "ciudad": "Concepción",
+      "region": "Región del Biobío",
+      "codigoPostal": ""
+    },
+    "items": [
+      {
+        "producto": "6af8ed0dc339f8b91f631062",
+        "nombre": "ASUS Dual GeForce RTX 4070 Super 12GB GDDR6X",
+        "imagenUrl": "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&auto=format&fit=crop&q=80",
+        "precio": 689990,
+        "cantidad": 1,
+        "subtotal": 689990,
+        "_id": "6af8ed0dc339f8b91f63106b"
+      }
+    ],
+    "metodoPago": "Webpay Plus (Débito/Crédito)",
+    "estadoPago": "Pagado",
+    "estadoPedido": "En Preparación",
+    "subtotal": 689990,
+    "costoEnvio": 0,
+    "descuento": 0,
+    "total": 689990,
+    "numeroSeguimiento": "CHX-847291",
+    "empresaTransporte": "Chilexpress",
+    "correoEnviado": true,
+    "createdAt": "2026-11-14T23:21:49.689Z",
+    "updatedAt": "2026-11-14T23:21:49.689Z",
+    "__v": 0
+  }
+]

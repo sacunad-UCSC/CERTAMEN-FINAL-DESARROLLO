@@ -1,0 +1,144 @@
+[
+  {
+    "_id": "6af8ed0dc339f8b91f631076",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "127.0.0.1",
+    "agenteUsuario": "",
+    "detalles": {
+      "info": "Inicialización de PcÑactory en español completada con éxito"
+    },
+    "createdAt": "2026-11-14T23:21:49.697Z",
+    "updatedAt": "2026-11-14T23:21:49.697Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8ee8e529f2fb4df198653",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "usuarioId": "6af8ed0dc339f8b91f631056",
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "::1",
+    "agenteUsuario": "",
+    "createdAt": "2026-11-14T23:28:14.348Z",
+    "updatedAt": "2026-11-14T23:28:14.348Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8ee9a529f2fb4df19865c",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "usuarioId": "6af8ed0dc339f8b91f631056",
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "::1",
+    "agenteUsuario": "",
+    "createdAt": "2026-11-14T23:28:26.997Z",
+    "updatedAt": "2026-11-14T23:28:26.997Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8f1863210434debcde155",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "usuarioId": "6af8ed0dc339f8b91f631056",
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "::1",
+    "agenteUsuario": "",
+    "createdAt": "2026-11-14T23:40:54.497Z",
+    "updatedAt": "2026-11-14T23:40:54.497Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8f2913210434debcde166",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "usuarioId": "6af8ed0dc339f8b91f631056",
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "::1",
+    "agenteUsuario": "",
+    "createdAt": "2026-11-14T23:45:21.717Z",
+    "updatedAt": "2026-11-14T23:45:21.717Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8f39e3210434debcde198",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "usuarioId": "6af8ed0dc339f8b91f631056",
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "::1",
+    "agenteUsuario": "",
+    "createdAt": "2026-11-14T23:49:50.194Z",
+    "updatedAt": "2026-11-14T23:49:50.194Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8f6323210434debcde1b8",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "usuarioId": "6af8ed0dc339f8b91f631056",
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "::1",
+    "agenteUsuario": "",
+    "createdAt": "2026-11-15T00:00:50.909Z",
+    "updatedAt": "2026-11-15T00:00:50.909Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8f7a93210434debcde1c9",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "usuarioId": "6af8ed0dc339f8b91f631056",
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "::1",
+    "agenteUsuario": "",
+    "createdAt": "2026-11-15T00:07:05.355Z",
+    "updatedAt": "2026-11-15T00:07:05.355Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8f89d3210434debcde1da",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "usuarioId": "6af8ed0dc339f8b91f631056",
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "::1",
+    "agenteUsuario": "",
+    "createdAt": "2026-11-15T00:11:09.919Z",
+    "updatedAt": "2026-11-15T00:11:09.919Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8f94a3210434debcde1e3",
+    "accion": "INGRESO_EXITOSO",
+    "realizadoPor": {
+      "usuarioId": "6af8ed0dc339f8b91f631056",
+      "correo": "admin@pcnfactory.cl",
+      "rol": "Administrador"
+    },
+    "direccionIp": "::1",
+    "agenteUsuario": "",
+    "createdAt": "2026-11-15T00:14:02.196Z",
+    "updatedAt": "2026-11-15T00:14:02.196Z",
+    "__v": 0
+  }
+]

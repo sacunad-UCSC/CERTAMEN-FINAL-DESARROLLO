@@ -1,0 +1,55 @@
+[
+  {
+    "_id": "6af8ed0dc339f8b91f63106d",
+    "categoria": "Garantía y Devoluciones",
+    "pregunta": "¿Qué garantía tienen los componentes de PC?",
+    "palabrasClave": [
+      "garantia",
+      "garantía",
+      "falla",
+      "devolucion",
+      "devolución"
+    ],
+    "respuesta": "Todos los componentes cuentan con 6 meses de garantía legal directa con PCStore y hasta 3 a 5 años de garantía oficial con el fabricante.",
+    "activa": true,
+    "__v": 0,
+    "createdAt": "2026-11-14T23:21:49.692Z",
+    "updatedAt": "2026-11-14T23:21:49.692Z"
+  },
+  {
+    "_id": "6af8ed0dc339f8b91f63106e",
+    "categoria": "Envíos y Despachos",
+    "pregunta": "¿Cuánto tardan los envíos a regiones?",
+    "palabrasClave": [
+      "envio",
+      "envío",
+      "despacho",
+      "tiempo",
+      "regiones",
+      "concepcion"
+    ],
+    "respuesta": "Despachamos en 24 a 48 horas hábiles a todo Chile mediante Chilexpress y Starken. En la Región del Biobío contamos con entrega en el mismo día comprando antes de las 13:00 hrs.",
+    "activa": true,
+    "__v": 0,
+    "createdAt": "2026-11-14T23:21:49.692Z",
+    "updatedAt": "2026-11-14T23:21:49.692Z"
+  },
+  {
+    "_id": "6af8ed0dc339f8b91f63106f",
+    "categoria": "Pagos y Facturación",
+    "pregunta": "¿Cuáles son los medios de pago disponibles?",
+    "palabrasClave": [
+      "pago",
+      "pagos",
+      "tarjeta",
+      "transferencia",
+      "cuotas",
+      "webpay"
+    ],
+    "respuesta": "Aceptamos tarjetas de Débito y Crédito en hasta 12 cuotas sin interés mediante Webpay Plus, y Transferencia Bancaria con un 5% de descuento adicional.",
+    "activa": true,
+    "__v": 0,
+    "createdAt": "2026-11-14T23:21:49.692Z",
+    "updatedAt": "2026-11-14T23:21:49.692Z"
+  }
+]

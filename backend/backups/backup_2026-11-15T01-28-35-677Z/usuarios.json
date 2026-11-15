@@ -1,0 +1,39 @@
+[
+  {
+    "_id": "6af8ed0dc339f8b91f631056",
+    "nombre": "Administrador UCSC",
+    "correo": "admin@pcnfactory.cl",
+    "telefono": "+56912345678",
+    "rut": "",
+    "clave": "$argon2id$v=19$m=65536,t=3,p=1$KJ8jQ8rLWrmuqzzR+/+TQQ$E3ocnt3SuVzonCicO70hKKGOURWHpNJZa+hy3dfO6Ig",
+    "rol": "Administrador",
+    "activo": true,
+    "direcciones": [],
+    "createdAt": "2026-11-14T23:21:49.068Z",
+    "updatedAt": "2026-11-15T01:24:08.560Z",
+    "__v": 0
+  },
+  {
+    "_id": "6af8ed0dc339f8b91f63105f",
+    "nombre": "Juan Pérez",
+    "correo": "cliente@ucsc.cl",
+    "telefono": "+56987654321",
+    "rut": "",
+    "clave": "$argon2id$v=19$m=65536,t=3,p=1$NCaulmnn16pV2S2Flalouw$EVsgILZJwCF6XPol54RtVCMJRw6bEzILDiWNj/bODXM",
+    "rol": "Usuario registrado",
+    "direcciones": [
+      {
+        "calle": "Av. Paicaví 3000",
+        "ciudad": "Concepción",
+        "region": "Región del Biobío",
+        "codigoPostal": "",
+        "esPredeterminada": true,
+        "_id": "6af8ed0dc339f8b91f631060"
+      }
+    ],
+    "activo": true,
+    "createdAt": "2026-11-14T23:21:49.387Z",
+    "updatedAt": "2026-11-15T01:24:08.709Z",
+    "__v": 0
+  }
+]
