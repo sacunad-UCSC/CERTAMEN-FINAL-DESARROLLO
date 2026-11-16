@@ -38,14 +38,14 @@ export default function ProductDetailModal({ product, onClose, onArmarPc, onOpen
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.65)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        zIndex: 1100,
+        backgroundColor: 'rgba(15, 23, 42, 0.7)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        zIndex: 3000,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '20px',
+        padding: '16px',
         animation: 'fadeIn 0.2s ease',
       }}
       onClick={onClose}
@@ -54,43 +54,92 @@ export default function ProductDetailModal({ product, onClose, onArmarPc, onOpen
         className="modal-box-card"
         style={{
           background: '#ffffff',
-          border: '2px solid var(--primary)',
-          borderRadius: '12px',
-          maxWidth: '900px',
+          borderRadius: '16px',
+          maxWidth: '920px',
           width: '100%',
-          maxHeight: '85vh',
+          maxHeight: '88vh',
           display: 'flex',
           flexDirection: 'column',
-          boxShadow: '0 20px 40px -8px rgba(0,0,0,0.25)',
+          boxShadow: '0 30px 60px -12px rgba(15, 23, 42, 0.35)',
           overflow: 'hidden',
           position: 'relative',
+          border: '1.5px solid rgba(0, 142, 204, 0.4)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Botón Cerrar */}
-        <button
-          onClick={onClose}
+        {/* Barra Superior Estilo Ventana Flotante */}
+        <div
           style={{
-            position: 'absolute',
-            top: '18px',
-            right: '18px',
-            background: '#f1f5f9',
-            border: 'none',
-            borderRadius: '50%',
-            width: '36px',
-            height: '36px',
+            background: 'linear-gradient(135deg, #09152b 0%, #0d284f 60%, #004b75 100%)',
+            color: '#ffffff',
+            padding: '12px 18px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            cursor: 'pointer',
-            color: '#475569',
-            zIndex: 10,
-            transition: 'background 0.2s ease',
+            justifyContent: 'space-between',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           }}
-          title="Cerrar ventana"
         >
-          <X size={20} />
-        </button>
+          {/* Controles estilo ventana (macOS/Windows) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span
+              onClick={onClose}
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: '#ef4444',
+                cursor: 'pointer',
+                display: 'inline-block',
+              }}
+              title="Cerrar ventana"
+            />
+            <span
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: '#f59e0b',
+                display: 'inline-block',
+                opacity: 0.8,
+              }}
+              title="Minimizar"
+            />
+            <span
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: '#10b981',
+                display: 'inline-block',
+                opacity: 0.8,
+              }}
+              title="Maximizar"
+            />
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', marginLeft: '6px' }}>
+              Ventana de Ficha Técnica &bull; PcÑactory
+            </span>
+          </div>
+
+          <button
+            onClick={onClose}
+            style={{
+              background: 'rgba(255, 255, 255, 0.15)',
+              border: 'none',
+              borderRadius: '50%',
+              width: '28px',
+              height: '28px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#ffffff',
+              transition: 'background 0.2s ease',
+            }}
+            title="Cerrar ventana"
+          >
+            <X size={16} />
+          </button>
+        </div>
 
         {/* Contenido en Scroll */}
         <div className="modal-scroll-body" style={{ overflowY: 'auto', padding: '32px' }}>
@@ -322,29 +371,72 @@ export default function ProductDetailModal({ product, onClose, onArmarPc, onOpen
                         salidasVideo: 'Salidas de Video / Conectores',
                         nucleosCuda: 'Núcleos CUDA / Shaders',
                         nucleosHilos: 'Núcleos e Hilos',
+                        cacheL3: 'Memoria Caché L3 / L2',
+                        consumoTdp: 'Consumo Térmico / TDP',
                         litografia: 'Litografía del Procesador',
                         graficosIntegrados: 'Gráficos Integrados',
-                        conectividad: 'Redes y Conectividad',
+                        lineasPcie: 'Líneas PCI Express',
+                        busMemoria: 'Bus de Memoria / Ancho de Banda',
+                        ranurasSlot: 'Grosor en Ranuras (Slots)',
+                        fasesPoderVrm: 'Fases de Poder VRM',
+                        ranurasM2: 'Ranuras M.2 NVMe PCIe',
+                        redesConectividad: 'Red LAN y Conectividad WiFi',
                         puertosUsb: 'Puertos USB / Conectividad Frontal',
+                        audioCodec: 'Códec de Audio y DAC',
+                        pantallaTelemetria: 'Pantalla LCD/OLED de Telemetría',
                         pantallaOled: 'Pantalla OLED Integrada',
                         pantallaLcd: 'Pantalla LCD de Telemetría',
+                        latenciaTiempos: 'Latencia y Tiempos (CL)',
                         latencia: 'Latencia y Tiempos (CL)',
+                        voltajeOperacion: 'Voltaje de Operación',
+                        perfilOverclock: 'Perfiles de Overclock (XMP/EXPO)',
                         perfiles: 'Perfiles de Memoria (XMP / EXPO)',
+                        iluminacionRgb: 'Iluminación y Efectos RGB',
                         iluminacion: 'Iluminación y Efectos RGB',
                         disipador: 'Disipación Térmica / Heatpipes',
                         lecturaSecuencial: 'Velocidad de Lectura Secuencial',
                         escrituraSecuencial: 'Velocidad de Escritura Secuencial',
+                        lecturaAleatoria: 'Lectura Aleatoria (IOPS)',
+                        controladorNand: 'Controlador y Memoria NAND',
+                        memoriaCache: 'Caché DRAM Dedicada',
                         durabilidadTbw: 'Durabilidad (TBW)',
                         durabilidad: 'Construcción y Durabilidad',
+                        seguridad: 'Cifrado y Seguridad Hardware',
+                        certificacionEficiencia: 'Certificación de Eficiencia',
                         certificacion: 'Certificación de Eficiencia',
+                        cableadoModular: 'Diseño de Cableado Modular',
+                        compatibilidadPcie5: 'Compatibilidad PCIe 5.0 / 12VHPWR',
+                        proteccionesElectricas: 'Protecciones Eléctricas',
+                        innovacionDiseno: 'Innovación de Diseño y Acceso',
+                        condensadores: 'Condensadores y Componentes',
                         dimensiones: 'Dimensiones Físicas',
+                        peso: 'Peso del Chasis / Producto',
+                        soporteMotherboard: 'Soporte de Placa Madre',
+                        longitudMaximaGpu: 'Longitud Máx. Tarjeta Gráfica',
+                        alturaMaximaCooler: 'Altura Máx. Cooler de CPU',
+                        longitudMaximaPsu: 'Longitud Máx. Fuente de Poder',
+                        soporteRadiadores: 'Soporte de Radiadores Líquidos',
+                        ventiladoresIncluidos: 'Ventiladores Preinstalados',
+                        bahiasAlmacenamiento: 'Bahías de Almacenamiento',
+                        conectividadFrontal: 'Conectividad y Puertos Frontales',
+                        gestionCables: 'Sistema de Gestión de Cables',
+                        filtrosPolvo: 'Filtros Antipolvo',
+                        almacenamientoExtra: 'Compartimento Extra',
+                        disenoReversible: 'Diseño Reversible / Modular',
+                        tamanoRadiador: 'Tamaño y Material del Radiador',
+                        bombaAio: 'Motor de la Bomba AIO',
                         bomba: 'Motor de la Bomba AIO',
                         ventiladores: 'Ventiladores Incluidos',
                         ventiladorVRM: 'Ventilador VRM Adicional',
+                        flujoAirePresion: 'Flujo de Aire y Presión Estática',
+                        tubosRefrigeracion: 'Mangueras y Tubos de Refrigeración',
+                        pastaTermica: 'Compuesto Térmico Incluido',
+                        nivelSonido: 'Nivel de Ruido Acústico',
+                        garantia: 'Garantía Oficial del Fabricante',
                         tecnologias: 'Tecnologías y Características',
                       };
 
-                      const displayLabel = labelMap[key] || key.replace(/([A-Z])/g, ' $1').toLowerCase();
+                      const displayLabel = labelMap[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
 
                       return (
                         <div

@@ -79,26 +79,67 @@ export default function UserProfileModal({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Cabecera */}
+        {/* Barra Superior Estilo Ventana Flotante */}
         <div
           style={{
             background: 'linear-gradient(135deg, #09152b 0%, #0d284f 60%, #004b75 100%)',
             color: '#ffffff',
-            padding: '22px 24px',
-            position: 'relative',
+            padding: '12px 18px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           }}
         >
+          {/* Controles estilo ventana (macOS/Windows) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span
+              onClick={onClose}
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: '#ef4444',
+                cursor: 'pointer',
+                display: 'inline-block',
+              }}
+              title="Cerrar ventana"
+            />
+            <span
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: '#f59e0b',
+                display: 'inline-block',
+                opacity: 0.8,
+              }}
+              title="Minimizar"
+            />
+            <span
+              style={{
+                width: '12px',
+                height: '12px',
+                borderRadius: '50%',
+                background: '#10b981',
+                display: 'inline-block',
+                opacity: 0.8,
+              }}
+              title="Maximizar"
+            />
+            <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', marginLeft: '6px' }}>
+              Ventana de Usuario & Compras &bull; PcÑactory
+            </span>
+          </div>
+
           <button
             onClick={onClose}
             style={{
-              position: 'absolute',
-              top: '16px',
-              right: '16px',
               background: 'rgba(255, 255, 255, 0.15)',
               border: 'none',
               borderRadius: '50%',
-              width: '32px',
-              height: '32px',
+              width: '28px',
+              height: '28px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -106,11 +147,21 @@ export default function UserProfileModal({
               color: '#ffffff',
               transition: 'background 0.2s ease',
             }}
-            title="Cerrar"
+            title="Cerrar ventana"
           >
-            <X size={18} />
+            <X size={16} />
           </button>
+        </div>
 
+        {/* Cabecera de Usuario */}
+        <div
+          style={{
+            background: 'linear-gradient(135deg, #0d284f 0%, #1e293b 100%)',
+            color: '#ffffff',
+            padding: '20px 24px',
+            position: 'relative',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div
               style={{
