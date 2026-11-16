@@ -48,6 +48,12 @@ const usuarioSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    // MFA fields
+    mfaSecret: { type: String, default: '' },
+    mfaPendingSecret: { type: String, default: '' },
+    mfaLastStep: { type: String, enum: ['setup', 'confirm', 'verify', null], default: null },
+    mfaFailures: { type: Number, default: 0 },
+    mfaLockedUntil: { type: Date, default: null },
   },
   {
     timestamps: true,
