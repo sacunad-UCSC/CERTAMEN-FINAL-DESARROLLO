@@ -21,6 +21,7 @@ export default function Navbar({
   onSearch,
   onOpenProfile,
   onOpenChangePassword,
+  onOpenCart,
 }) {
   const { user, logout } = useAuth();
   const { totalItems } = useCart();
@@ -224,7 +225,7 @@ export default function Navbar({
             {/* Carrito de Compras */}
             <button
               className={`header-btn cart-btn ${currentTab === 'cart' ? 'active-cart' : ''}`}
-              onClick={() => onNavigate('cart')}
+              onClick={() => onOpenCart ? onOpenCart() : onNavigate('cart')}
               title="Carrito de compras"
             >
               <ShoppingCart size={20} />
@@ -236,7 +237,7 @@ export default function Navbar({
           <div className="mobile-top-quick-actions">
             <button
               className="mobile-quick-btn"
-              onClick={() => onNavigate('cart')}
+              onClick={() => onOpenCart ? onOpenCart() : onNavigate('cart')}
               title="Ver Carro"
             >
               <ShoppingCart size={22} color="var(--navy)" />
@@ -335,7 +336,7 @@ export default function Navbar({
 
         <button
           className={`mobile-nav-item cart-item ${currentTab === 'cart' ? 'active' : ''}`}
-          onClick={() => onNavigate('cart')}
+          onClick={() => onOpenCart ? onOpenCart() : onNavigate('cart')}
         >
           <div className="mobile-nav-icon-wrap">
             <ShoppingCart size={20} />

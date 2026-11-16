@@ -48,6 +48,44 @@ MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://127.0.0.1:27017/pc_nfactory_db
 client = MongoClient(MONGODB_URI)
 db = client.get_database("pc_nfactory_db")
 
+# Cargar catálogo con especificaciones enriquecidas desde productos.json
+ENRICHED_SPECS = {}
+try:
+    p_json_paths = [
+        os.path.join(os.path.dirname(__file__), "productos.json"),
+        os.path.join(os.path.dirname(__file__), "..", "backend", "backups", "backup_2026-11-15T01-28-35-677Z", "productos.json")
+    ]
+    for p_path in p_json_paths:
+        if os.path.exists(p_path):
+            import json
+            with open(p_path, "r", encoding="utf-8") as f:
+                p_data = json.load(f)
+                for p_item in p_data:
+                    sku = p_item.get("codigoSku")
+                    specs = p_item.get("especificacionesTecnicas", {})
+                    if sku and specs:
+                        clean_s = {k: v for k, v in specs.items() if v and str(v).strip()}
+                        if clean_s:
+                            ENRICHED_SPECS[sku] = clean_s
+            break
+    print(f"✅ Catálogo enriquecido cargado: {len(ENRICHED_SPECS)} productos con especificaciones completas.")
+except Exception as e:
+    print(f"Aviso al cargar especificaciones de respaldo: {e}")
+
+@app.on_event("startup")
+def on_startup():
+    try:
+        # Sincronizar automáticamente especificaciones completas en MongoDB Atlas si están vacías
+        for sku, specs in ENRICHED_SPECS.items():
+            if specs:
+                db["productos"].update_one(
+                    {"codigoSku": sku},
+                    {"$set": {"especificacionesTecnicas": specs}}
+                )
+        print("✅ Especificaciones técnicas enriquecidas sincronizadas en la base de datos.")
+    except Exception as e:
+        print(f"Aviso en sincronización de arranque: {e}")
+
 # Seguridad JWT y Cifrado Argon2id
 JWT_SECRET = os.getenv("JWT_SECRET", "clave_secreta_jwt_ucsc_2026")
 JWT_ALGORITHM = "HS256"
@@ -197,9 +235,17 @@ def get_products(category: Optional[str] = None, search: Optional[str] = None):
     cursor = db["productos"].find(query).sort("createdAt", -1)
     products = []
     for p in cursor:
+        sku = p.get("codigoSku", "")
+        # Priorizar especificaciones ricas y fusionar con catálogo enriquecido
+        raw_db_specs = p.get("especificacionesTecnicas", {})
+        clean_db_specs = {k: v for k, v in raw_db_specs.items() if v and str(v).strip()} if isinstance(raw_db_specs, dict) else {}
+        fallback_specs = ENRICHED_SPECS.get(sku, {})
+        # Fusionar dando prioridad a las más detalladas
+        final_specs = {**fallback_specs, **clean_db_specs} if len(clean_db_specs) >= len(fallback_specs) else {**clean_db_specs, **fallback_specs}
+
         products.append({
             "_id": str(p["_id"]),
-            "sku": p.get("codigoSku", ""),
+            "sku": sku,
             "name": p.get("nombre", ""),
             "category": p.get("categoria", ""),
             "brand": p.get("marca", ""),
@@ -209,7 +255,7 @@ def get_products(category: Optional[str] = None, search: Optional[str] = None):
             "discountPercent": p.get("porcentajeDescuento", 0),
             "stock": p.get("stock", 0),
             "imageUrl": p.get("imagenUrl", ""),
-            "specs": p.get("especificacionesTecnicas", {}),
+            "specs": final_specs,
             "warrantyMonths": p.get("garantiaMeses", 36),
             "featured": p.get("destacado", False)
         })
@@ -668,14 +714,28 @@ def create_admin_user(data: CreateUserAdminRequest, user_payload: dict = Depends
 @app.post("/api/orders", tags=["Pedidos"])
 def create_order_endpoint(data: CreateOrderRequest, request: Request):
     user_id = None
+    user_email = ""
+    user_name = ""
+
     auth_header = request.headers.get("Authorization")
     if auth_header and auth_header.startswith("Bearer "):
         try:
             token = auth_header.split(" ")[1]
             payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
             user_id = ObjectId(payload["id"])
-        except Exception:
-            pass
+            user_doc = db["usuarios"].find_one({"_id": user_id})
+            if user_doc:
+                user_email = user_doc.get("correo", "").lower()
+                user_name = user_doc.get("nombre", "")
+        except Exception as e:
+            print(f"Aviso decodificando token en pedido: {e}")
+
+    # Si vino customer en el payload, complementar datos
+    if data.customer:
+        if not user_email:
+            user_email = (data.customer.get("email") or data.customer.get("correo") or "").lower()
+        if not user_name:
+            user_name = data.customer.get("name") or data.customer.get("nombre") or ""
 
     order_num = f"PED-{int(time.time())}"
     track_num = f"CHX-{random.randint(100000, 999999)}"
@@ -690,9 +750,13 @@ def create_order_endpoint(data: CreateOrderRequest, request: Request):
         st = p_price * p_qty
         subtotal += st
         items_db.append({
+            "productId": str(it.get("productId") or it.get("_id") or ""),
             "nombre": p_name,
+            "name": p_name,
             "precio": p_price,
+            "price": p_price,
             "cantidad": p_qty,
+            "quantity": p_qty,
             "subtotal": st
         })
 
@@ -700,13 +764,26 @@ def create_order_endpoint(data: CreateOrderRequest, request: Request):
 
     order_doc = {
         "numeroPedido": order_num,
+        "orderNumber": order_num,
         "usuario": user_id,
-        "cliente": data.customer or {"nombre": "Cliente PcÑactory", "correo": "cliente@pcnfactory.cl"},
+        "usuarioId": str(user_id) if user_id else None,
+        "cliente": {
+            "nombre": user_name or "Cliente PcÑactory",
+            "name": user_name or "Cliente PcÑactory",
+            "correo": user_email or "cliente@pcnfactory.cl",
+            "email": user_email or "cliente@pcnfactory.cl",
+            "telefono": data.customer.get("phone", "+56987654321") if data.customer else "+56987654321"
+        },
+        "customer": {
+            "name": user_name or "Cliente PcÑactory",
+            "email": user_email or "cliente@pcnfactory.cl"
+        },
         "direccionDespacho": data.shippingAddress or {"calle": "Av. Paicaví 3280", "ciudad": "Concepción", "region": "Biobío"},
         "items": items_db,
-        "metodoPago": data.paymentMethod,
+        "metodoPago": data.paymentMethod or "Webpay Plus (Débito/Crédito)",
         "estadoPago": "Pagado",
         "estadoPedido": "En Preparación",
+        "orderStatus": "En Preparación",
         "total": final_total,
         "numeroSeguimiento": track_num,
         "empresaTransporte": "Chilexpress",
@@ -727,7 +804,7 @@ def get_orders(user_payload: dict = Depends(get_current_user)):
     for o in cursor:
         orders.append({
             "_id": str(o["_id"]),
-            "orderNumber": o.get("numeroPedido", ""),
+            "orderNumber": o.get("numeroPedido", "") or o.get("orderNumber", ""),
             "customer": o.get("cliente", {}),
             "shippingAddress": o.get("direccionDespacho", {}),
             "orderStatus": o.get("estadoPedido", "En Preparación"),
@@ -747,8 +824,12 @@ def get_my_orders(user_payload: dict = Depends(get_current_user)):
     query = {
         "$or": [
             {"usuario": user_id},
-            {"cliente.correo": user_email},
-            {"cliente.email": user_email}
+            {"usuario": str(user_id)},
+            {"usuarioId": str(user_id)},
+            {"cliente.correo": {"$regex": f"^{user_email}$", "$options": "i"}},
+            {"cliente.email": {"$regex": f"^{user_email}$", "$options": "i"}},
+            {"customer.email": {"$regex": f"^{user_email}$", "$options": "i"}},
+            {"customer.correo": {"$regex": f"^{user_email}$", "$options": "i"}}
         ]
     }
     cursor = db["pedidos"].find(query).sort("createdAt", -1)
@@ -756,10 +837,13 @@ def get_my_orders(user_payload: dict = Depends(get_current_user)):
     for o in cursor:
         orders.append({
             "_id": str(o["_id"]),
-            "orderNumber": o.get("numeroPedido", ""),
+            "orderNumber": o.get("numeroPedido", "") or o.get("orderNumber", ""),
+            "numeroPedido": o.get("numeroPedido", "") or o.get("orderNumber", ""),
             "orderStatus": o.get("estadoPedido", "En Preparación"),
+            "estadoPedido": o.get("estadoPedido", "En Preparación"),
             "total": o.get("total", 0),
             "trackingNumber": o.get("numeroSeguimiento", "CHX-654321"),
+            "numeroSeguimiento": o.get("numeroSeguimiento", "CHX-654321"),
             "empresaTransporte": o.get("empresaTransporte", "Chilexpress"),
             "items": o.get("items", []),
             "createdAt": str(o.get("createdAt", ""))

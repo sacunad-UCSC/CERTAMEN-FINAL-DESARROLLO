@@ -25,3 +25,5 @@ __pycache__/
 Thumbs.db
 .vscode/
 .idea/
+poblar_atlas.py
+fix_passwords_atlas.py

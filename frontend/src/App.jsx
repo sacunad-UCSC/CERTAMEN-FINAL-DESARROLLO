@@ -10,6 +10,7 @@ import PcBuilderPage from './pages/PcBuilderPage';
 import ProductDetailModal from './components/ProductDetailModal';
 import UserProfileModal from './components/UserProfileModal';
 import ChangePasswordModal from './components/ChangePasswordModal';
+import CartModal from './components/CartModal';
 import { useAuth } from './context/AuthContext';
 import { useCart } from './context/CartContext';
 import { api } from './services/api';
@@ -49,8 +50,39 @@ export default function App() {
   const [initialBuilderProduct, setInitialBuilderProduct] = useState(null);
   const [orderSuccessModal, setOrderSuccessModal] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [profileInitialTab, setProfileInitialTab] = useState('orders');
+  const [newOrderAlert, setNewOrderAlert] = useState(null);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const { cart, addToCart, removeFromCart, clearCart, totalPrice } = useCart();
+
+  const handleOpenProductDetail = (prodOrItem) => {
+    if (!prodOrItem) return;
+    if (prodOrItem.specs || prodOrItem.category) {
+      setDetailProduct(prodOrItem);
+    } else {
+      const targetName = (prodOrItem.name || prodOrItem.nombre || '').toLowerCase();
+      const found = products.find(
+        (p) =>
+          (prodOrItem.productId && p._id === prodOrItem.productId) ||
+          p.name.toLowerCase() === targetName
+      );
+      if (found) {
+        setDetailProduct(found);
+      } else {
+        setDetailProduct({
+          _id: prodOrItem.productId || 'item-temp',
+          name: prodOrItem.name || prodOrItem.nombre || 'Componente Gamer',
+          price: prodOrItem.price || prodOrItem.precio || 0,
+          category: 'Componentes de PC',
+          brand: 'PcÑactory',
+          imageUrl: prodOrItem.imageUrl || '/logo.png',
+          specs: { 'Categoría': 'Hardware Seguro', 'Garantía': '36 meses oficial' },
+          stock: 10,
+        });
+      }
+    }
+  };
 
   // Cargar productos del catálogo
   const loadProducts = async () => {
@@ -111,8 +143,12 @@ export default function App() {
         onNavigate={setCurrentTab}
         onOpenAuth={() => {}}
         onSearch={handleSearch}
-        onOpenProfile={() => setIsProfileOpen(true)}
+        onOpenProfile={(tab = 'orders') => {
+          setProfileInitialTab(tab);
+          setIsProfileOpen(true);
+        }}
         onOpenChangePassword={() => setIsChangePasswordOpen(true)}
+        onOpenCart={() => setIsCartModalOpen(true)}
       />
 
       <main className="main-content-area" style={{ flex: 1 }}>
@@ -389,29 +425,43 @@ export default function App() {
                           items: cart.map(item => ({
                             productId: item._id,
                             name: item.name,
+                            nombre: item.name,
                             price: item.price,
+                            precio: item.price,
                             quantity: item.quantity,
+                            cantidad: item.quantity,
+                            subtotal: item.price * item.quantity,
                           })),
                           total: totalPrice,
                           customer: {
                             name: user.name,
+                            nombre: user.name,
                             email: user.email,
+                            correo: user.email,
                             phone: '+56987654321',
                           },
                           shippingAddress: {
-                            address: 'Av. Paicaví 3280',
-                            city: 'Concepción',
+                            calle: 'Av. Paicaví 3280',
+                            ciudad: 'Concepción',
                             region: 'Biobío',
                           },
                           paymentMethod: 'Webpay Plus (Débito/Crédito)'
                         };
-                        const token = localStorage.getItem('token');
-                        await api.createOrder(orderData, token);
+                        const authToken = localStorage.getItem('token');
+                        const res = await api.createOrder(orderData, authToken);
+                        clearCart();
+                        const orderNum = res?.orderNumber || res?.numeroPedido || 'Reciente';
+                        setNewOrderAlert(orderNum);
+                        setProfileInitialTab('orders');
+                        setIsProfileOpen(true);
+                        setCurrentTab('home');
                       } catch (e) {
                         console.error('Error guardando pedido:', e);
+                        clearCart();
+                        setProfileInitialTab('orders');
+                        setIsProfileOpen(true);
+                        setCurrentTab('home');
                       }
-                      setOrderSuccessModal(true);
-                      clearCart();
                     }}
                   >
                     Finalizar Pedido
@@ -425,6 +475,22 @@ export default function App() {
 
       <Footer onNavigate={setCurrentTab} />
 
+      {/* Modal de Carro de Compras en Modo Ventana */}
+      <CartModal
+        isOpen={isCartModalOpen || currentTab === 'cart'}
+        onClose={() => {
+          setIsCartModalOpen(false);
+          if (currentTab === 'cart') setCurrentTab('home');
+        }}
+        onCheckoutSuccess={(orderNum) => {
+          setNewOrderAlert(orderNum);
+          setProfileInitialTab('orders');
+          setIsProfileOpen(true);
+          setCurrentTab('home');
+        }}
+        onOpenProductDetail={handleOpenProductDetail}
+      />
+
       {/* Modal de Detalle y Especificaciones Técnicas de Producto */}
       {detailProduct && (
         <ProductDetailModal
@@ -435,15 +501,29 @@ export default function App() {
             setDetailProduct(null);
             setCurrentTab('builder');
           }}
+          onOpenCart={() => {
+            setDetailProduct(null);
+            setIsCartModalOpen(true);
+          }}
         />
       )}
 
       {/* Modal de Perfil de Usuario y Mis Compras */}
       {isProfileOpen && (
         <UserProfileModal
-          onClose={() => setIsProfileOpen(false)}
+          initialTab={profileInitialTab}
+          newOrderAlert={newOrderAlert}
+          onClose={() => {
+            setIsProfileOpen(false);
+            setNewOrderAlert(null);
+          }}
           onOpenChangePassword={() => setIsChangePasswordOpen(true)}
           onNavigateAdmin={() => setCurrentTab('admin')}
+          onOpenProductDetail={handleOpenProductDetail}
+          onExploreProducts={() => {
+            setIsProfileOpen(false);
+            setCurrentTab('home');
+          }}
         />
       )}
 

@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
-export default function ProductDetailModal({ product, onClose, onArmarPc }) {
+export default function ProductDetailModal({ product, onClose, onArmarPc, onOpenCart }) {
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const { addToCart } = useCart();
@@ -312,32 +312,35 @@ export default function ProductDetailModal({ product, onClose, onArmarPc }) {
                       // Formatear etiquetas de claves legibles en español
                       const labelMap = {
                         socket: 'Socket / Zócalo',
-                        tipoMemoria: 'Tipo de Memoria',
+                        tipoMemoria: 'Tipo de Memoria / VRAM',
                         potenciaWatts: 'Consumo / Potencia',
-                        factorForma: 'Factor de Forma',
-                        capacidad: 'Capacidad / Memoria',
+                        factorForma: 'Factor de Forma / Tamaño',
+                        capacidad: 'Capacidad de Almacenamiento / VRAM',
                         interfaz: 'Interfaz de Conexión',
-                        frecuenciaBoost: 'Frecuencia Boost',
-                        salidasVideo: 'Salidas de Video',
-                        nucleosCuda: 'Núcleos CUDA',
-                        nucleosHilos: 'Núcleos e Hilos',
+                        frecuenciaBoost: 'Frecuencia Boost (Reloj Máx.)',
                         frecuenciaBase: 'Frecuencia Base',
-                        litografia: 'Litografía',
+                        salidasVideo: 'Salidas de Video / Conectores',
+                        nucleosCuda: 'Núcleos CUDA / Shaders',
+                        nucleosHilos: 'Núcleos e Hilos',
+                        litografia: 'Litografía del Procesador',
                         graficosIntegrados: 'Gráficos Integrados',
                         conectividad: 'Redes y Conectividad',
-                        puertosUsb: 'Puertos USB / Tipo C',
+                        puertosUsb: 'Puertos USB / Conectividad Frontal',
                         pantallaOled: 'Pantalla OLED Integrada',
-                        latencia: 'Latencia y Tiempos',
-                        perfiles: 'Perfiles de Memoria',
-                        iluminacion: 'Iluminación RGB',
-                        disipador: 'Disipación Térmica',
-                        lecturaSecuencial: 'Lectura Secuencial',
-                        escrituraSecuencial: 'Escritura Secuencial',
+                        pantallaLcd: 'Pantalla LCD de Telemetría',
+                        latencia: 'Latencia y Tiempos (CL)',
+                        perfiles: 'Perfiles de Memoria (XMP / EXPO)',
+                        iluminacion: 'Iluminación y Efectos RGB',
+                        disipador: 'Disipación Térmica / Heatpipes',
+                        lecturaSecuencial: 'Velocidad de Lectura Secuencial',
+                        escrituraSecuencial: 'Velocidad de Escritura Secuencial',
                         durabilidadTbw: 'Durabilidad (TBW)',
+                        durabilidad: 'Construcción y Durabilidad',
                         certificacion: 'Certificación de Eficiencia',
                         dimensiones: 'Dimensiones Físicas',
-                        bomba: 'Motor de la Bomba',
+                        bomba: 'Motor de la Bomba AIO',
                         ventiladores: 'Ventiladores Incluidos',
+                        ventiladorVRM: 'Ventilador VRM Adicional',
                         tecnologias: 'Tecnologías y Características',
                       };
 
@@ -447,7 +450,7 @@ export default function ProductDetailModal({ product, onClose, onArmarPc }) {
                 >
                   {added ? (
                     <>
-                      <CheckCircle size={18} /> ¡Añadido al Carro!
+                      <CheckCircle size={18} /> ¡Añadido!
                     </>
                   ) : (
                     <>
@@ -455,6 +458,33 @@ export default function ProductDetailModal({ product, onClose, onArmarPc }) {
                     </>
                   )}
                 </button>
+
+                {/* Botón Ver Carro en Ventana */}
+                {onOpenCart && (
+                  <button
+                    onClick={() => {
+                      onClose();
+                      onOpenCart();
+                    }}
+                    style={{
+                      background: 'rgba(0, 142, 204, 0.08)',
+                      border: '1.5px solid rgba(0, 142, 204, 0.3)',
+                      color: 'var(--primary)',
+                      padding: '12px 16px',
+                      borderRadius: '8px',
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      whiteSpace: 'nowrap',
+                    }}
+                    title="Ver carro de compras en ventana"
+                  >
+                    <ShoppingCart size={16} /> Ver Carro
+                  </button>
+                )}
 
                 {/* Botón Usar en Arma tu PC */}
                 {onArmarPc && (
