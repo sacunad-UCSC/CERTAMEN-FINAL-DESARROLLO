@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: pcnactory
+    env: docker
+    plan: free
+    branch: main
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: BREVO_API_KEY
+        sync: false
+      - key: MAIL_FROM_EMAIL
+        value: pcnactory@gmail.com
+      - key: MAIL_FROM_NAME
+        value: PcÑactory

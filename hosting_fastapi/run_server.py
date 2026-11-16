@@ -14,10 +14,11 @@ if __name__ == "__main__":
     print("  📖 Documentación ReDoc: http://localhost:8000/redoc")
     print("=" * 60)
 
+    port = int(os.environ.get("PORT", 8000))
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
+        port=port,
         reload=False,
         log_level="info"
     )

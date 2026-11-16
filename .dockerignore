@@ -1,0 +1,11 @@
+node_modules
+venv
+.git
+data
+*.log
+cloudflared
+cloudflared.exe
+*.zip
+*.tar.gz
+__pycache__
+*.pyc
