@@ -39,8 +39,8 @@ export default function CartModal({ isOpen, onClose, onCheckoutSuccess, onOpenPr
         })),
         total: totalPrice,
         customer: {
-          name: user ? user.name : 'Cliente PcÑactory',
-          nombre: user ? user.name : 'Cliente PcÑactory',
+          name: user ? user.name : 'Cliente NexoPC',
+          nombre: user ? user.name : 'Cliente NexoPC',
           email: user ? user.email : 'cliente@pcnfactory.cl',
           correo: user ? user.email : 'cliente@pcnfactory.cl',
           phone: '+56987654321',

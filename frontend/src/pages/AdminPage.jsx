@@ -618,7 +618,7 @@ export default function AdminPage() {
         <div style={{ background: '#fff', padding: '24px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
           <h3 style={{ fontSize: '16px', fontWeight: 800, marginBottom: '8px' }}>Gestión de Enlaces a Redes Sociales</h3>
           <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '20px' }}>
-            Modifica las URLs públicas que aparecen en el pie de página de PcÑactory en tiempo real sin reiniciar el servidor.
+            Modifica las URLs públicas que aparecen en el pie de página de NexoPC en tiempo real sin reiniciar el servidor.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

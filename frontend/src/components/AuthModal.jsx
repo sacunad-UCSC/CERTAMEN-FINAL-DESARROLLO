@@ -223,7 +223,7 @@ export default function AuthModal({ isOpen, onClose }) {
             color: '#64748b',
           }}
         >
-          <strong>Demostración rápida de Roles en PcÑactory:</strong><br />
+          <strong>Demostración rápida de Roles en NexoPC:</strong><br />
           • Admin: <code>admin@pcnfactory.cl</code> / <code>AdminPassword2026!</code><br />
           • Cliente: <code>cliente@ucsc.cl</code> / <code>UserPassword2026!</code>
         </div>

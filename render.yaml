@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: pcnactory
+    name: nexopc
     env: docker
     plan: free
     branch: main
@@ -12,6 +12,6 @@ services:
       - key: BREVO_API_KEY
         sync: false
       - key: MAIL_FROM_EMAIL
-        value: pcnactory@gmail.com
+        value: nexopc@gmail.com
       - key: MAIL_FROM_NAME
-        value: PcÑactory
+        value: NexoPC

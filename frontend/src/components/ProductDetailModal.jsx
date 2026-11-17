@@ -117,7 +117,7 @@ export default function ProductDetailModal({ product, onClose, onArmarPc, onOpen
               title="Maximizar"
             />
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', marginLeft: '6px' }}>
-              Ventana de Ficha Técnica &bull; PcÑactory
+              Ventana de Ficha Técnica &bull; NexoPC
             </span>
           </div>
 

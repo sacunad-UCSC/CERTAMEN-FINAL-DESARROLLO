@@ -128,7 +128,7 @@ export default function UserProfileModal({
               title="Maximizar"
             />
             <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', marginLeft: '6px' }}>
-              Ventana de Usuario & Compras &bull; PcÑactory
+              Ventana de Usuario & Compras &bull; NexoPC
             </span>
           </div>
 
@@ -337,7 +337,7 @@ export default function UserProfileModal({
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
                         <div>
                           <strong style={{ fontSize: '14.5px', color: 'var(--navy)' }}>
-                            {ord.numeroPedido || ord.orderNumber || 'Pedido PcÑactory'}
+                            {ord.numeroPedido || ord.orderNumber || 'Pedido NexoPC'}
                           </strong>
                           <div style={{ fontSize: '11.5px', color: '#64748b', marginTop: '2px' }}>
                             {ord.createdAt ? new Date(ord.createdAt).toLocaleDateString('es-CL', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Reciente'}

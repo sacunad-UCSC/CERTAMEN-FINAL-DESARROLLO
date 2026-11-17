@@ -1,6 +1,6 @@
 import random
 """
-PcÑactory - Servidor de Hosting y API en FastAPI (Python)
+NexoPC - Servidor de Hosting y API en FastAPI (Python)
 Plataforma Segura de Venta y Cotización de Hardware Gamer
 """
 
@@ -25,8 +25,8 @@ import time, datetime
 
 # Inicialización de FastAPI con metadatos Swagger
 app = FastAPI(
-    title="PcÑactory API & Hosting Server",
-    description="Servidor de Hosting y API REST de alto rendimiento en FastAPI para PcÑactory (UCSC 2026).",
+    title="NexoPC API & Hosting Server",
+    description="Servidor de Hosting y API REST de alto rendimiento en FastAPI para NexoPC (UCSC 2026).",
     version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -94,7 +94,7 @@ ph = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=1)
 # Configuración del Servicio Transaccional de Correo (Brevo / HTTP API)
 BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
 MAIL_FROM_EMAIL = os.getenv("MAIL_FROM_EMAIL", "pcnactory@gmail.com")
-MAIL_FROM_NAME = os.getenv("MAIL_FROM_NAME", "PcÑactory")
+MAIL_FROM_NAME = os.getenv("MAIL_FROM_NAME", "NexoPC")
 INSTITUTIONAL_EMAIL = os.getenv("INSTITUTIONAL_EMAIL", "rtapiae@it.ucsc.cl")
 
 def send_brevo_email(to_email: str, to_name: str, subject: str, html_content: str, reply_to: Optional[str] = None):
@@ -409,7 +409,7 @@ def submit_contact(data: ContactRequest):
     # Doble despacho de correos en tiempo real
     # 1. Correo al buzón institucional (UCSC)
     html_admin = f'''
-    <h2>Nueva Solicitud de Cotización / Contacto - PcÑactory</h2>
+    <h2>Nueva Solicitud de Cotización / Contacto - NexoPC</h2>
     <p><strong>Cliente:</strong> {data.name}</p>
     <p><strong>Correo:</strong> {data.email}</p>
     <p><strong>Teléfono:</strong> {data.phone or 'No registrado'}</p>
@@ -417,15 +417,15 @@ def submit_contact(data: ContactRequest):
     <p><strong>Mensaje:</strong></p>
     <blockquote style="background: #f1f5f9; padding: 12px; border-left: 4px solid #008ecc;">{data.message}</blockquote>
     <hr>
-    <p style="color: #64748b; font-size: 12px;">Mensaje despachado automáticamente desde la plataforma PcÑactory.</p>
+    <p style="color: #64748b; font-size: 12px;">Mensaje despachado automáticamente desde la plataforma NexoPC.</p>
     '''
-    send_brevo_email(INSTITUTIONAL_EMAIL, "Coordinación UCSC", f"[Consulta Web PcÑactory] {data.subject}", html_admin, reply_to=data.email)
+    send_brevo_email(INSTITUTIONAL_EMAIL, "Coordinación UCSC", f"[Consulta Web NexoPC] {data.subject}", html_admin, reply_to=data.email)
 
     # 2. Correo de confirmación al cliente
     html_client = f'''
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
         <div style="background: #0f172a; color: white; padding: 20px; text-align: center;">
-            <h1 style="color: #008ecc; margin: 0;">PcÑactory</h1>
+            <h1 style="color: #008ecc; margin: 0;">NexoPC</h1>
             <p style="margin: 4px 0 0 0; color: #94a3b8; font-size: 13px;">Confirmación de Recepción de Solicitud</p>
         </div>
         <div style="padding: 24px; color: #334155;">
@@ -436,11 +436,11 @@ def submit_contact(data: ContactRequest):
             <p><strong>Copia de tu mensaje enviado:</strong></p>
             <p style="background: #f8fafc; padding: 12px; border-radius: 8px; font-style: italic;">{data.message}</p>
             <br>
-            <small style="color: #64748b;">PcÑactory - Los Ángeles / Concepción, Región del Biobío, Chile.</small>
+            <small style="color: #64748b;">NexoPC - Los Ángeles / Concepción, Región del Biobío, Chile.</small>
         </div>
     </div>
     '''
-    send_brevo_email(data.email, data.name, f"Confirmación de Recepción: {data.subject} - PcÑactory", html_client)
+    send_brevo_email(data.email, data.name, f"Confirmación de Recepción: {data.subject} - NexoPC", html_client)
 
     return {
         "success": True,
@@ -490,7 +490,7 @@ def ask_chatbot(data: ChatbotAskRequest):
     if any(k in q for k in ["armar pc", "arma tu pc", "compatibilidad", "cuello de botella", "ensamble"]):
         return {
             "success": True,
-            "answer": "🛠️ ¡PcÑactory cuenta con un Motor de Compatibilidad en vivo! Puedes ir a 'Arma tu PC' para elegir procesador, placa madre y tarjeta gráfica sin riesgos de incompatibilidad ni cuellos de botella.",
+            "answer": "🛠️ ¡NexoPC cuenta con un Motor de Compatibilidad en vivo! Puedes ir a 'Arma tu PC' para elegir procesador, placa madre y tarjeta gráfica sin riesgos de incompatibilidad ni cuellos de botella.",
             "options": ["¿Qué tarjetas gráficas tienen disponibles?", "¿Tienen procesadores Ryzen 7 o Intel i9?", "Solicitar contacto con un ejecutivo"]
         }
 
@@ -593,7 +593,7 @@ def ask_chatbot(data: ChatbotAskRequest):
     # 4. Asistencia de Ventas por Defecto
     return {
         "success": True,
-        "answer": "Soy tu Asistente de Ventas y Hardware de PcÑactory. Puedo ayudarte a buscar tarjetas gráficas RTX/Radeon, procesadores Ryzen/Intel, verificar compatibilidad en 'Arma tu PC' o responder sobre garantías y despachos.",
+        "answer": "Soy tu Asistente de Ventas y Hardware de NexoPC. Puedo ayudarte a buscar tarjetas gráficas RTX/Radeon, procesadores Ryzen/Intel, verificar compatibilidad en 'Arma tu PC' o responder sobre garantías y despachos.",
         "options": [
             "¿Qué garantía tienen las GPUs?",
             "¿Tiempos de despacho a regiones?",
@@ -768,14 +768,14 @@ def create_order_endpoint(data: CreateOrderRequest, request: Request):
         "usuario": user_id,
         "usuarioId": str(user_id) if user_id else None,
         "cliente": {
-            "nombre": user_name or "Cliente PcÑactory",
-            "name": user_name or "Cliente PcÑactory",
+            "nombre": user_name or "Cliente NexoPC",
+            "name": user_name or "Cliente NexoPC",
             "correo": user_email or "cliente@pcnfactory.cl",
             "email": user_email or "cliente@pcnfactory.cl",
             "telefono": data.customer.get("phone", "+56987654321") if data.customer else "+56987654321"
         },
         "customer": {
-            "name": user_name or "Cliente PcÑactory",
+            "name": user_name or "Cliente NexoPC",
             "email": user_email or "cliente@pcnfactory.cl"
         },
         "direccionDespacho": data.shippingAddress or {"calle": "Av. Paicaví 3280", "ciudad": "Concepción", "region": "Biobío"},
@@ -878,4 +878,4 @@ if os.path.exists(FRONTEND_DIST):
 else:
     @app.get("/")
     def index_fallback():
-        return {"message": "PcÑactory FastAPI Server Activo. Ejecuta 'npm run build' en frontend para hospedar la SPA."}
+        return {"message": "NexoPC FastAPI Server Activo. Ejecuta 'npm run build' en frontend para hospedar la SPA."}

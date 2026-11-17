@@ -7,7 +7,7 @@ export default function ChatbotWidget({ onNavigateToContact }) {
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
-      text: '¡Hola! Bienvenido al asistente de PcÑactory. ¿En qué componente de hardware o consulta te puedo ayudar hoy?',
+      text: '¡Hola! Bienvenido al asistente de NexoPC. ¿En qué componente de hardware o consulta te puedo ayudar hoy?',
     },
   ]);
   const [input, setInput] = useState('');
@@ -67,7 +67,7 @@ export default function ChatbotWidget({ onNavigateToContact }) {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Bot size={22} />
               <div>
-                <strong style={{ fontSize: '14px', display: 'block' }}>PcÑactory Bot</strong>
+                <strong style={{ fontSize: '14px', display: 'block' }}>NexoPC Bot</strong>
                 <small style={{ fontSize: '11px', opacity: 0.9 }}>Soporte & Hardware en línea</small>
               </div>
             </div>

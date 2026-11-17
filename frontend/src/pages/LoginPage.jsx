@@ -82,7 +82,7 @@ export default function LoginPage() {
           position: 'relative',
         }}
       >
-        {/* Decoración geométrica en las esquinas con el color primario de PcÑactory (#008ecc) */}
+        {/* Decoración geométrica en las esquinas con el color primario de NexoPC (#008ecc) */}
         <div
           style={{
             position: 'absolute',
@@ -120,7 +120,7 @@ export default function LoginPage() {
           }}
         />
 
-        {/* Lado Izquierdo: Banner completo con el logo de PcÑactory */}
+        {/* Lado Izquierdo: Banner completo con el logo de NexoPC */}
         <div
           style={{
             padding: '30px',
@@ -160,7 +160,7 @@ export default function LoginPage() {
             >
               <img
                 src="/logo.png"
-                alt="PcÑactory Logo Oficial"
+                alt="NexoPC Logo Oficial"
                 style={{
                   width: '100%',
                   maxHeight: '200px',

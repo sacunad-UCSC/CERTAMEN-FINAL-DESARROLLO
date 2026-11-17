@@ -130,7 +130,7 @@ export default function App() {
   };
 
   if (loading) {
-    return <LogoLoader fullPage={true} message="Cargando portal seguro PcÑactory..." />;
+    return <LogoLoader fullPage={true} message="Cargando portal seguro NexoPC..." />;
   }
 
   // Si el usuario no ha iniciado sesión, se muestra la pantalla de login/registro
@@ -627,7 +627,7 @@ export default function App() {
                 marginBottom: '26px',
               }}
             >
-              Tu solicitud ha sido procesada correctamente en la plataforma de PcÑactory.
+              Tu solicitud ha sido procesada correctamente en la plataforma de NexoPC.
             </p>
 
             <button

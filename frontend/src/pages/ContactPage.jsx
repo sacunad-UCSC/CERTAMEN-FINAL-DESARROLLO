@@ -91,7 +91,7 @@ export default function ContactPage() {
           Contacto y Cotización de Hardware
         </h1>
         <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '28px' }}>
-          Envíanos tus requerimientos a <strong>PcÑactory</strong> para cotizar componentes, armado de PCs gamer o soporte técnico. Nuestro sistema
+          Envíanos tus requerimientos a <strong>NexoPC</strong> para cotizar componentes, armado de PCs gamer o soporte técnico. Nuestro sistema
           te enviará un correo automático de confirmación de forma inmediata.
         </p>
 

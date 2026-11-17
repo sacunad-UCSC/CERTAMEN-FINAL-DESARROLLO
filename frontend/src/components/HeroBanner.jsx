@@ -43,7 +43,7 @@ export default function HeroBanner({ products = [], onSelectCategory, onNavigate
           <div className="hero-content">
             <h4>Especial Hardware Gaming & Workstation</h4>
             <h1>COMPONENTES DE ALTO RENDIMIENTO</h1>
-            <p>Encuentra las mejores tarjetas gráficas, procesadores y periféricos en PcÑactory.</p>
+            <p>Encuentra las mejores tarjetas gráficas, procesadores y periféricos en NexoPC.</p>
           </div>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function HeroBanner({ products = [], onSelectCategory, onNavigate
           {/* Descripción con desplazamiento */}
           <p className="hero-description">
             {currentProduct.description ||
-              'Tecnología de punta con despacho rápido a todo Chile y garantía oficial directa en PcÑactory.'}
+              'Tecnología de punta con despacho rápido a todo Chile y garantía oficial directa en NexoPC.'}
           </p>
 
           {/* Fila de Precios y Botones */}

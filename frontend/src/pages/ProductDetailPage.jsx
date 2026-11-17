@@ -66,7 +66,7 @@ export default function ProductDetailPage({
             if (found) {
               setProduct(found);
               // Actualizar el título de la pestaña del navegador con el nombre del producto
-              document.title = `${found.name} | PcÑactory`;
+              document.title = `${found.name} | NexoPC`;
             }
             setLoading(false);
           }
@@ -81,7 +81,7 @@ export default function ProductDetailPage({
 
     return () => {
       isMounted = false;
-      document.title = 'PcÑactory | Venta de Componentes de PC & Hardware Seguro';
+      document.title = 'NexoPC | Venta de Componentes de PC & Hardware Seguro';
     };
   }, [productId, initialProduct]);
 
@@ -700,7 +700,7 @@ export default function ProductDetailPage({
                   Especificaciones Técnicas Detalladas
                 </h3>
                 <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '20px' }}>
-                  Datos oficiales y parámetros de rendimiento verificados por el laboratorio técnico de PcÑactory.
+                  Datos oficiales y parámetros de rendimiento verificados por el laboratorio técnico de NexoPC.
                 </p>
 
                 <div
@@ -756,7 +756,7 @@ export default function ProductDetailPage({
             {activeTab === 'warranty' && (
               <div style={{ maxWidth: '850px' }}>
                 <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--navy)', marginBottom: '14px' }}>
-                  Garantía y Respaldo PcÑactory
+                  Garantía y Respaldo NexoPC
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '14px', color: '#334155', lineHeight: '1.7' }}>
                   <p>

@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * Componente LogoLoader
- * Utiliza el logo oficial de PcÑactory con animación de elevación vertical y sombra dinámica.
+ * Utiliza el logo oficial de NexoPC con animación de elevación vertical y sombra dinámica.
  */
 export default function LogoLoader({
   message = '',
@@ -37,7 +37,7 @@ export default function LogoLoader({
       >
         <img
           src="/logo.png"
-          alt="PcÑactory"
+          alt="NexoPC"
           className="pcn-logo-floating"
           style={{
             width: '290px',

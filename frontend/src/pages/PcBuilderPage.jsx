@@ -626,7 +626,7 @@ export default function PcBuilderPage({ onNavigate, initialProduct, onClearIniti
                 </p>
                 {analysis.bottleneck.recommendation && (
                   <p style={{ fontSize: '11px', color: 'var(--primary-dark)', marginTop: '6px', background: 'rgba(0,142,204,0.06)', padding: '6px 8px', borderRadius: '6px' }}>
-                    💡 <strong>Tip PcÑactory:</strong> {analysis.bottleneck.recommendation}
+                    💡 <strong>Tip NexoPC:</strong> {analysis.bottleneck.recommendation}
                   </p>
                 )}
               </>

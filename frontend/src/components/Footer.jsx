@@ -26,7 +26,7 @@ export default function Footer({ onNavigate }) {
           <div style={{ background: '#ffffff', padding: '10px 14px', borderRadius: '10px', display: 'inline-block', marginBottom: '14px' }}>
             <img
               src="/logo.png"
-              alt="PcÑactory Logo"
+              alt="NexoPC Logo"
               style={{ height: '42px', objectFit: 'contain', display: 'block' }}
             />
           </div>
@@ -121,7 +121,7 @@ export default function Footer({ onNavigate }) {
           color: '#64748b',
         }}
       >
-        <span>© 2026 <strong>PcÑactory</strong> · Plataforma Web Segura y DevSecOps.</span>
+        <span>© 2026 <strong>NexoPC</strong> · Plataforma Web Segura y DevSecOps.</span>
         <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           <ShieldCheck size={16} color="#10b981" />
           Universidad Católica de la Santísima Concepción (UCSC)

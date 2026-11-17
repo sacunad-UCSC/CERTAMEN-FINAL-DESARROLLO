@@ -39,7 +39,7 @@ export default function Navbar({
       {/* HEADER SUPERIOR */}
       <header className="top-header">
         <div className="top-bar-container">
-          {/* Logo oficial de PcÑactory */}
+          {/* Logo oficial de NexoPC */}
           <div
             className="logo"
             onClick={() => onNavigate('home')}
@@ -47,7 +47,7 @@ export default function Navbar({
           >
             <img
               src="/logo.png"
-              alt="PcÑactory Logo"
+              alt="NexoPC Logo"
               className="navbar-brand-logo"
             />
           </div>

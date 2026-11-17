@@ -1,6 +1,6 @@
 /**
  * Motor Dinámico y Extensible de Compatibilidad, Cuello de Botella y Asistente de Reemplazo
- * PcÑactory - 2026
+ * NexoPC - 2026
  * 
  * Diseñado para admitir componentes nuevos agregados en cualquier momento
  * (vía Admin Panel, MongoDB o API) mediante lectura inteligente de especificaciones
