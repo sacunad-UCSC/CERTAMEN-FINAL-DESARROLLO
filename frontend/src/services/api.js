@@ -77,6 +77,31 @@ export const api = {
     });
   },
 
+  // MFA Google Authenticator
+  mfaSetup: async (challengeToken) => {
+    return await safeFetch(`${API_BASE_URL}/auth/mfa/setup`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ challengeToken }),
+    });
+  },
+
+  mfaConfirm: async (challengeToken, code) => {
+    return await safeFetch(`${API_BASE_URL}/auth/mfa/confirm`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ challengeToken, code }),
+    });
+  },
+
+  mfaVerify: async (challengeToken, code) => {
+    return await safeFetch(`${API_BASE_URL}/auth/mfa/verify`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ challengeToken, code }),
+    });
+  },
+
   changePassword: async (data, token) => {
     return await safeFetch(`${API_BASE_URL}/auth/change-password`, {
       method: 'POST',

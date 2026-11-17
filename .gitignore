@@ -1,3 +1,7 @@
+# Binarios cloudflare
+cloudflared
+cloudflared.exe
+
 # Dependencias
 node_modules/
 dist/

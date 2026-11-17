@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Cpu, Lock, Mail, User, AlertCircle, ShieldCheck, Check } from 'lucide-react';
+import MFAChallenge from '../components/MFAChallenge';
 
 export default function LoginPage() {
   const { login, register } = useAuth();
@@ -11,6 +12,7 @@ export default function LoginPage() {
   const [agreeTerms, setAgreeTerms] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [mfaChallenge, setMfaChallenge] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,6 +34,10 @@ export default function LoginPage() {
       }
 
       setLoading(false);
+      if (res?.mfaRequired) {
+        setMfaChallenge(res);
+        return;
+      }
       if (!res.success) {
         setError(res.message || 'Error en la autenticación. Verifica tus credenciales.');
       }
@@ -273,7 +279,15 @@ export default function LoginPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          {mfaChallenge ? (
+            <MFAChallenge
+              challenge={mfaChallenge}
+              onCancel={() => setMfaChallenge(null)}
+              onSuccess={() => setMfaChallenge(null)}
+            />
+          ) : (
+            <>
+              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             {!isLogin && (
               <div style={{ position: 'relative' }}>
                 <input
@@ -458,6 +472,8 @@ export default function LoginPage() {
               {isLogin ? 'Create Account' : 'Login Account'}
             </button>
           </div>
+            </>
+          )}
         </div>
       </div>
     </div>

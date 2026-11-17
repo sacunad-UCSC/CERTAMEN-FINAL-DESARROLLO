@@ -1,7 +1,7 @@
 {
   "name": "pc-store-backend",
   "version": "1.0.0",
-  "description": "Backend seguro para plataforma de componentes de PC PcÑactory",
+  "description": "Backend seguro para plataforma de componentes de PC NexoPC",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",

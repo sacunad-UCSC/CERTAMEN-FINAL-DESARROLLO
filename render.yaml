@@ -9,6 +9,8 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
+      - key: MFA_ENCRYPTION_KEY
+        generateValue: true
       - key: BREVO_API_KEY
         sync: false
       - key: MAIL_FROM_EMAIL

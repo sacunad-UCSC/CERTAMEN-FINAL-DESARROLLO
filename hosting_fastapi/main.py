@@ -17,6 +17,8 @@ import pymongo
 from pymongo import MongoClient
 from bson import ObjectId
 import jwt
+import pyotp
+import mfa_security
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from cart_api import router as cart_router
@@ -93,7 +95,7 @@ ph = PasswordHasher(time_cost=3, memory_cost=65536, parallelism=1)
 
 # Configuración del Servicio Transaccional de Correo (Brevo / HTTP API)
 BREVO_API_KEY = os.getenv("BREVO_API_KEY", "")
-MAIL_FROM_EMAIL = os.getenv("MAIL_FROM_EMAIL", "pcnactory@gmail.com")
+MAIL_FROM_EMAIL = os.getenv("MAIL_FROM_EMAIL", "nexopc@gmail.com")
 MAIL_FROM_NAME = os.getenv("MAIL_FROM_NAME", "NexoPC")
 INSTITUTIONAL_EMAIL = os.getenv("INSTITUTIONAL_EMAIL", "rtapiae@it.ucsc.cl")
 
@@ -127,6 +129,13 @@ def send_brevo_email(to_email: str, to_name: str, subject: str, html_content: st
 
 
 # Modelos Pydantic
+class MFAChallengeRequest(BaseModel):
+    challengeToken: str
+
+class MFAVerifyRequest(BaseModel):
+    challengeToken: str
+    code: str
+
 class LoginRequest(BaseModel):
     email: str
     password: str
@@ -201,6 +210,8 @@ def get_current_user(request: Request):
     token = auth_header.split(" ")[1]
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        if payload.get("purpose") == "mfa":
+            raise HTTPException(status_code=401, detail="Completa Google Authenticator para acceder")
         return payload
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Token expirado. Por favor inicia sesión nuevamente.")
@@ -289,6 +300,115 @@ def delete_product(product_id: str, user_payload: dict = Depends(get_current_use
     db["productos"].delete_one({"_id": ObjectId(product_id)})
     return {"success": True, "message": "Producto eliminado"}
 
+# ==============================================================
+# MFA GOOGLE AUTHENTICATOR (TOTP + CIFRADO AES-256-GCM)
+# ==============================================================
+
+def mfa_prompt(user):
+    challenge = jwt.encode(
+        {
+            "id": str(user["_id"]),
+            "purpose": "mfa",
+            "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=5)
+        },
+        JWT_SECRET,
+        algorithm=JWT_ALGORITHM
+    )
+    return {
+        "success": True,
+        "mfaRequired": True,
+        "setupRequired": not bool(user.get("mfaSecret")),
+        "challengeToken": challenge
+    }
+
+def mfa_challenge_user(challenge):
+    try:
+        payload = jwt.decode(challenge, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        if payload.get("purpose") != "mfa":
+            raise ValueError('Propósito incorrecto')
+        user = db["usuarios"].find_one({"_id": ObjectId(payload["id"]), "activo": {"$ne": False}})
+        if not user:
+            raise ValueError('Usuario inactivo')
+        return user
+    except Exception:
+        raise HTTPException(status_code=401, detail="Desafío expirado; vuelve a iniciar sesión")
+
+def mfa_validate(user, code, encrypted_or_plain_secret):
+    if user.get("mfaLockedUntil", 0) > time.time():
+        raise HTTPException(status_code=429, detail="Demasiados intentos; espera cinco minutos")
+    
+    try:
+        secret = mfa_security.decrypt(encrypted_or_plain_secret)
+    except Exception:
+        secret = encrypted_or_plain_secret
+
+    delta = mfa_security.verify_delta(secret, str(code))
+    current_step = int(time.time() // 30)
+    valid_step = (current_step + delta) if delta is not None else None
+
+    if valid_step is None or valid_step <= user.get("mfaLastStep", -1):
+        fails = user.get("mfaFailures", 0) + 1
+        db["usuarios"].update_one(
+            {"_id": user["_id"]},
+            {"$set": {
+                "mfaFailures": 0 if fails >= 5 else fails,
+                "mfaLockedUntil": time.time() + 300 if fails >= 5 else 0
+            }}
+        )
+        raise HTTPException(status_code=401, detail="Código inválido o ya utilizado")
+
+    db["usuarios"].update_one(
+        {"_id": user["_id"]},
+        {"$set": {
+            "mfaLastStep": valid_step,
+            "mfaFailures": 0,
+            "mfaLockedUntil": 0
+        }}
+    )
+
+def mfa_success(user):
+    return {
+        "success": True,
+        "token": create_jwt(str(user["_id"]), user.get("rol", "Usuario registrado")),
+        "user": {
+            "id": str(user["_id"]),
+            "name": user.get("nombre", ""),
+            "email": user.get("correo", ""),
+            "role": user.get("rol", "Usuario registrado")
+        }
+    }
+
+@app.post("/api/auth/mfa/setup", tags=["Autenticación MFA"])
+def mfa_setup(data: MFAChallengeRequest):
+    user = mfa_challenge_user(data.challengeToken)
+    if user.get("mfaSecret"):
+        raise HTTPException(status_code=400, detail="Authenticator ya está activado")
+    secret = pyotp.random_base32()
+    enc_secret = mfa_security.encrypt(secret)
+    db["usuarios"].update_one({"_id": user["_id"]}, {"$set": {"mfaPendingSecret": enc_secret}})
+    otp_url = pyotp.TOTP(secret).provisioning_uri(name=user["correo"], issuer_name="NexoPC")
+    return {"success": True, "secret": secret, "otpauthUrl": otp_url}
+
+@app.post("/api/auth/mfa/confirm", tags=["Autenticación MFA"])
+def mfa_confirm(data: MFAVerifyRequest):
+    user = mfa_challenge_user(data.challengeToken)
+    if user.get("mfaSecret") or not user.get("mfaPendingSecret"):
+        raise HTTPException(status_code=400, detail="Primero inicia la vinculación MFA")
+    mfa_validate(user, data.code, user["mfaPendingSecret"])
+    db["usuarios"].update_one(
+        {"_id": user["_id"]},
+        {"$set": {"mfaSecret": user["mfaPendingSecret"]}, "$unset": {"mfaPendingSecret": ""}}
+    )
+    return mfa_success(user)
+
+@app.post("/api/auth/mfa/verify", tags=["Autenticación MFA"])
+def mfa_verify(data: MFAVerifyRequest):
+    user = mfa_challenge_user(data.challengeToken)
+    if not user.get("mfaSecret"):
+        raise HTTPException(status_code=400, detail="Primero vincula Authenticator")
+    mfa_validate(user, data.code, user["mfaSecret"])
+    return mfa_success(user)
+
 @app.post("/api/auth/login", tags=["Autenticación JWT & Argon2id"])
 def login(data: LoginRequest):
     user = db["usuarios"].find_one({"correo": data.email.lower()})
@@ -313,20 +433,28 @@ def login(data: LoginRequest):
     if not es_valida:
         raise HTTPException(status_code=401, detail="Credenciales inválidas")
 
-    token = create_jwt(str(user["_id"]), user.get("rol", "Usuario registrado"))
-    return {
-        "success": True,
-        "token": token,
-        "user": {
-            "id": str(user["_id"]),
-            "name": user.get("nombre", ""),
-            "email": user.get("correo", ""),
-            "role": user.get("rol", "Usuario registrado")
-        }
-    }
+    # MFA: contraseña válida; se exige TOTP antes de emitir el token de sesión.
+    return mfa_prompt(user)
 
 @app.post("/api/auth/register", tags=["Autenticación JWT & Argon2id"])
 def register(data: RegisterRequest):
+    existing = db["usuarios"].find_one({"correo": data.email.lower()})
+    if existing:
+        raise HTTPException(status_code=400, detail="El correo ya se encuentra registrado")
+    
+    hash_argon2 = ph.hash(data.password)
+    nuevo_doc = {
+        "nombre": data.name,
+        "correo": data.email.lower(),
+        "clave": hash_argon2,
+        "rol": "Usuario registrado",
+        "activo": True,
+        "createdAt": datetime.datetime.utcnow().isoformat()
+    }
+    res = db["usuarios"].insert_one(nuevo_doc)
+    nuevo_doc["_id"] = res.inserted_id
+    # MFA: registro completado; se exige vincular Authenticator antes de la sesión.
+    return mfa_prompt(nuevo_doc)
     existing = db["usuarios"].find_one({"correo": data.email.lower()})
     if existing:
         raise HTTPException(status_code=400, detail="El correo ya se encuentra registrado")
@@ -867,6 +995,11 @@ if os.path.exists(FRONTEND_DIST):
         if os.path.exists(logo_path):
             return FileResponse(logo_path)
         return FileResponse(os.path.join(os.path.dirname(__file__), "..", "frontend", "public", "logo.png"))
+
+    @app.head("/", include_in_schema=False)
+    @app.head("/{full_path:path}", include_in_schema=False)
+    def head_check(full_path: str = ""):
+        return JSONResponse(status_code=200, content={"status": "ok"})
 
     @app.get("/{full_path:path}")
     def serve_spa(full_path: str):

@@ -8,7 +8,7 @@ async function migrateUsers() {
 
   const demoUsers = [
     {
-      nombre: 'Administrador PcÑactory',
+      nombre: 'Administrador NexoPC',
       correo: 'admin@pcnfactory.cl',
       clave: 'AdminPassword2026!',
       rol: 'Administrador',

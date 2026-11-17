@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { X, Lock, Mail, User, AlertCircle } from 'lucide-react';
+import MFAChallenge from './MFAChallenge';
 
 export default function AuthModal({ isOpen, onClose }) {
   const { login, register } = useAuth();
@@ -10,6 +11,7 @@ export default function AuthModal({ isOpen, onClose }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [mfaChallenge, setMfaChallenge] = useState(null);
 
   if (!isOpen) return null;
 
@@ -26,6 +28,10 @@ export default function AuthModal({ isOpen, onClose }) {
     }
 
     setLoading(false);
+    if (res?.mfaRequired) {
+      setMfaChallenge(res);
+      return;
+    }
     if (res.success) {
       onClose();
     } else {
@@ -124,7 +130,18 @@ export default function AuthModal({ isOpen, onClose }) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        {mfaChallenge ? (
+          <MFAChallenge
+            challenge={mfaChallenge}
+            onCancel={() => setMfaChallenge(null)}
+            onSuccess={() => {
+              setMfaChallenge(null);
+              onClose();
+            }}
+          />
+        ) : (
+          <>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           {!isLogin && (
             <div>
               <label style={{ fontSize: '12px', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Nombre</label>
@@ -208,6 +225,8 @@ export default function AuthModal({ isOpen, onClose }) {
             </span>
           )}
         </div>
+          </>
+        )}
 
         {/* Credenciales de demostración rápidas para defensa */}
         <div

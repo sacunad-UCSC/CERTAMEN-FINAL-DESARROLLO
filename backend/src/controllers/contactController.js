@@ -18,16 +18,16 @@ exports.submitContact = async (req, res, next) => {
 
     try {
       const transporter = await createTransporter();
-      const correoInstitucional = process.env.INSTITUTIONAL_EMAIL || 'contacto@pcnfactory.cl';
+      const correoInstitucional = process.env.INSTITUTIONAL_EMAIL || 'contacto@nexopc.cl';
 
       // 1. Notificación a la institución/empresa
       await transporter.sendMail({
-        from: `"PcÑactory Notificaciones" <${process.env.SMTP_USER || 'no-reply@pcnfactory.cl'}>`,
+        from: `"NexoPC Notificaciones" <${process.env.SMTP_USER || 'no-reply@nexopc.cl'}>`,
         to: correoInstitucional,
         replyTo: email,
-        subject: `[Consulta Web PcÑactory] ${subject}`,
+        subject: `[Consulta Web NexoPC] ${subject}`,
         html: `
-          <h2>Nueva Consulta Registrada en Base de Datos PcÑactory</h2>
+          <h2>Nueva Consulta Registrada en Base de Datos NexoPC</h2>
           <p><strong>Cliente:</strong> ${name}</p>
           <p><strong>Correo:</strong> ${email}</p>
           <p><strong>Teléfono:</strong> ${phone || 'No registrado'}</p>
@@ -40,17 +40,17 @@ exports.submitContact = async (req, res, next) => {
 
       // 2. Confirmación al cliente
       await transporter.sendMail({
-        from: `"Soporte Oficial PcÑactory" <${correoInstitucional}>`,
+        from: `"Soporte Oficial NexoPC" <${correoInstitucional}>`,
         to: email,
-        subject: `Confirmación de Recepción: ${subject} - PcÑactory`,
+        subject: `Confirmación de Recepción: ${subject} - NexoPC`,
         html: `
           <h3>Hola ${name},</h3>
-          <p>Hemos recibido tu consulta o cotización en <strong>PcÑactory</strong> con el asunto: <em>"${subject}"</em>.</p>
+          <p>Hemos recibido tu consulta o cotización en <strong>NexoPC</strong> con el asunto: <em>"${subject}"</em>.</p>
           <p>Un ejecutivo de hardware de nuestro equipo se pondrá en contacto contigo a la brevedad.</p>
           <br>
           <p>Copia de tu mensaje: "${message}"</p>
           <br>
-          <small>PcÑactory - Los Ángeles, Región del Biobío, Chile</small>
+          <small>NexoPC - Los Ángeles, Región del Biobío, Chile</small>
         `,
       });
       confCliente = true;
