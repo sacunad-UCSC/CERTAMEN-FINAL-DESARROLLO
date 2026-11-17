@@ -11,6 +11,8 @@ import ProductDetailModal from './components/ProductDetailModal';
 import UserProfileModal from './components/UserProfileModal';
 import ChangePasswordModal from './components/ChangePasswordModal';
 import CartModal from './components/CartModal';
+import LogoLoader from './components/LogoLoader';
+import ProductDetailPage from './pages/ProductDetailPage';
 import { useAuth } from './context/AuthContext';
 import { useCart } from './context/CartContext';
 import { api } from './services/api';
@@ -54,34 +56,26 @@ export default function App() {
   const [newOrderAlert, setNewOrderAlert] = useState(null);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [productViewId, setProductViewId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('producto') || params.get('id') || params.get('sku') || null;
+    }
+    return null;
+  });
   const { cart, addToCart, removeFromCart, clearCart, totalPrice } = useCart();
+
+  // Abrir producto en nueva pestaña con loader animado tal como en el video
+  const openProductInNewTab = (p) => {
+    if (!p) return;
+    const identifier = p.sku || p._id || p.id || p.codigoSku;
+    const targetUrl = `/?producto=${encodeURIComponent(identifier)}`;
+    window.open(targetUrl, '_blank');
+  };
 
   const handleOpenProductDetail = (prodOrItem) => {
     if (!prodOrItem) return;
-    if (prodOrItem.specs || prodOrItem.category) {
-      setDetailProduct(prodOrItem);
-    } else {
-      const targetName = (prodOrItem.name || prodOrItem.nombre || '').toLowerCase();
-      const found = products.find(
-        (p) =>
-          (prodOrItem.productId && p._id === prodOrItem.productId) ||
-          p.name.toLowerCase() === targetName
-      );
-      if (found) {
-        setDetailProduct(found);
-      } else {
-        setDetailProduct({
-          _id: prodOrItem.productId || 'item-temp',
-          name: prodOrItem.name || prodOrItem.nombre || 'Componente Gamer',
-          price: prodOrItem.price || prodOrItem.precio || 0,
-          category: 'Componentes de PC',
-          brand: 'PcÑactory',
-          imageUrl: prodOrItem.imageUrl || '/logo.png',
-          specs: { 'Categoría': 'Hardware Seguro', 'Garantía': '36 meses oficial' },
-          stock: 10,
-        });
-      }
-    }
+    openProductInNewTab(prodOrItem);
   };
 
   // Cargar productos del catálogo
@@ -118,17 +112,25 @@ export default function App() {
     if (user) loadProducts();
   }, [user, selectedCategory, searchFilter]);
 
+  const handleNavigate = (tab) => {
+    if (productViewId) {
+      setProductViewId(null);
+      window.history.pushState({}, '', '/');
+    }
+    setCurrentTab(tab);
+  };
+
   const handleSearch = (term) => {
     setSearchFilter(term);
+    if (productViewId) {
+      setProductViewId(null);
+      window.history.pushState({}, '', '/');
+    }
     setCurrentTab('home');
   };
 
   if (loading) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <h3>Cargando portal seguro PcÑactory...</h3>
-      </div>
-    );
+    return <LogoLoader fullPage={true} message="Cargando portal seguro PcÑactory..." />;
   }
 
   // Si el usuario no ha iniciado sesión, se muestra la pantalla de login/registro
@@ -140,7 +142,7 @@ export default function App() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar
         currentTab={currentTab}
-        onNavigate={setCurrentTab}
+        onNavigate={handleNavigate}
         onOpenAuth={() => {}}
         onSearch={handleSearch}
         onOpenProfile={(tab = 'orders') => {
@@ -152,16 +154,35 @@ export default function App() {
       />
 
       <main className="main-content-area" style={{ flex: 1 }}>
-        {/* VISTA: INICIO / TIENDA */}
-        {currentTab === 'home' && (
+        {/* VISTA DEDICADA DE PRODUCTO (ABIERTA EN NUEVA PESTAÑA CON LOADER ANIMADO) */}
+        {productViewId ? (
+          <ProductDetailPage
+            productId={productViewId}
+            onNavigateHome={() => {
+              setProductViewId(null);
+              window.history.pushState({}, '', '/');
+              setCurrentTab('home');
+            }}
+            onArmarPc={(p) => {
+              setInitialBuilderProduct(p);
+              setProductViewId(null);
+              window.history.pushState({}, '', '/');
+              setCurrentTab('builder');
+            }}
+            onOpenCart={() => setIsCartModalOpen(true)}
+          />
+        ) : (
           <>
-            {/* Hero Banner dinámico con rotación de componentes e imágenes */}
-            <HeroBanner
-              products={products}
-              onSelectCategory={setSelectedCategory}
-              onNavigate={setCurrentTab}
-              onOpenDetail={setDetailProduct}
-            />
+            {/* VISTA: INICIO / TIENDA */}
+            {currentTab === 'home' && (
+              <>
+                {/* Hero Banner dinámico con rotación de componentes e imágenes */}
+                <HeroBanner
+                  products={products}
+                  onSelectCategory={setSelectedCategory}
+                  onNavigate={handleNavigate}
+                  onOpenDetail={openProductInNewTab}
+                />
 
             {/* Categorías Circulares */}
             <div className="section-container">
@@ -225,18 +246,18 @@ export default function App() {
                     <div key={p._id} className="product-card" style={{ display: 'flex', flexDirection: 'column' }}>
                       {p.discountPercent > 0 && <span className="discount-tag">-{p.discountPercent}% OFF</span>}
 
-                      {/* Imagen con cursor pointer para ver detalle y ficha técnica */}
+                      {/* Imagen con cursor pointer para abrir en nueva pestaña con animación loader */}
                       <div
-                        onClick={() => setDetailProduct(p)}
+                        onClick={() => openProductInNewTab(p)}
                         style={{ cursor: 'pointer', textAlign: 'center', position: 'relative' }}
-                        title="Haz clic para ver fotos a detalle y especificaciones técnicas"
+                        title="Haz clic para ver fotos a detalle y ficha técnica en una nueva pestaña"
                       >
                         <img src={p.imageUrl} alt={p.name} className="product-img" />
                       </div>
 
                       <span
                         className="product-brand"
-                        onClick={() => setDetailProduct(p)}
+                        onClick={() => openProductInNewTab(p)}
                         style={{ cursor: 'pointer' }}
                       >
                         {p.brand}
@@ -244,7 +265,7 @@ export default function App() {
                       <h3
                         className="product-name"
                         title={p.name}
-                        onClick={() => setDetailProduct(p)}
+                        onClick={() => openProductInNewTab(p)}
                         style={{ cursor: 'pointer' }}
                       >
                         {p.name}
@@ -270,7 +291,7 @@ export default function App() {
                           Añadir al Carro
                         </button>
                         <button
-                          onClick={() => setDetailProduct(p)}
+                          onClick={() => openProductInNewTab(p)}
                           style={{
                             background: '#f1f5f9',
                             border: '1px solid #cbd5e1',
@@ -281,7 +302,7 @@ export default function App() {
                             color: 'var(--navy)',
                             cursor: 'pointer',
                           }}
-                          title="Ver ficha técnica completa"
+                          title="Ver ficha técnica en una nueva pestaña"
                         >
                           Ver Detalle
                         </button>
@@ -471,9 +492,11 @@ export default function App() {
             )}
           </div>
         )}
-      </main>
+      </>
+    )}
+  </main>
 
-      <Footer onNavigate={setCurrentTab} />
+  <Footer onNavigate={handleNavigate} />
 
       {/* Modal de Carro de Compras en Modo Ventana */}
       <CartModal

@@ -1389,3 +1389,43 @@ body {
     margin-top: 4px !important;
   }
 }
+
+/* ============================================================
+   ANIMACIÓN LOADER IDÉNTICA AL VIDEO DE PCFACTORY
+   ============================================================ */
+.pcf-glyph-p {
+  animation: pcf-move-up 0.8s infinite ease-in-out;
+}
+
+.pcf-glyph-c {
+  animation: pcf-move-down 0.8s infinite ease-in-out;
+}
+
+@keyframes pcf-move-up {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-22px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes pcf-move-down {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(22px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Transición suave para la vista de producto */
+.product-detail-view-container {
+  animation: fadeIn 0.3s ease-in-out;
+}

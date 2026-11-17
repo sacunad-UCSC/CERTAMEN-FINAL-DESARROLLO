@@ -9,6 +9,7 @@ import {
   Info,
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { getSpecLabel } from '../services/specLabels';
 
 export default function ProductDetailModal({ product, onClose, onArmarPc, onOpenCart }) {
   const [quantity, setQuantity] = useState(1);
@@ -358,85 +359,7 @@ export default function ProductDetailModal({ product, onClose, onArmarPc, onOpen
                 >
                   {specsList.length > 0 ? (
                     specsList.map(([key, val], idx) => {
-                      // Formatear etiquetas de claves legibles en español
-                      const labelMap = {
-                        socket: 'Socket / Zócalo',
-                        tipoMemoria: 'Tipo de Memoria / VRAM',
-                        potenciaWatts: 'Consumo / Potencia',
-                        factorForma: 'Factor de Forma / Tamaño',
-                        capacidad: 'Capacidad de Almacenamiento / VRAM',
-                        interfaz: 'Interfaz de Conexión',
-                        frecuenciaBoost: 'Frecuencia Boost (Reloj Máx.)',
-                        frecuenciaBase: 'Frecuencia Base',
-                        salidasVideo: 'Salidas de Video / Conectores',
-                        nucleosCuda: 'Núcleos CUDA / Shaders',
-                        nucleosHilos: 'Núcleos e Hilos',
-                        cacheL3: 'Memoria Caché L3 / L2',
-                        consumoTdp: 'Consumo Térmico / TDP',
-                        litografia: 'Litografía del Procesador',
-                        graficosIntegrados: 'Gráficos Integrados',
-                        lineasPcie: 'Líneas PCI Express',
-                        busMemoria: 'Bus de Memoria / Ancho de Banda',
-                        ranurasSlot: 'Grosor en Ranuras (Slots)',
-                        fasesPoderVrm: 'Fases de Poder VRM',
-                        ranurasM2: 'Ranuras M.2 NVMe PCIe',
-                        redesConectividad: 'Red LAN y Conectividad WiFi',
-                        puertosUsb: 'Puertos USB / Conectividad Frontal',
-                        audioCodec: 'Códec de Audio y DAC',
-                        pantallaTelemetria: 'Pantalla LCD/OLED de Telemetría',
-                        pantallaOled: 'Pantalla OLED Integrada',
-                        pantallaLcd: 'Pantalla LCD de Telemetría',
-                        latenciaTiempos: 'Latencia y Tiempos (CL)',
-                        latencia: 'Latencia y Tiempos (CL)',
-                        voltajeOperacion: 'Voltaje de Operación',
-                        perfilOverclock: 'Perfiles de Overclock (XMP/EXPO)',
-                        perfiles: 'Perfiles de Memoria (XMP / EXPO)',
-                        iluminacionRgb: 'Iluminación y Efectos RGB',
-                        iluminacion: 'Iluminación y Efectos RGB',
-                        disipador: 'Disipación Térmica / Heatpipes',
-                        lecturaSecuencial: 'Velocidad de Lectura Secuencial',
-                        escrituraSecuencial: 'Velocidad de Escritura Secuencial',
-                        lecturaAleatoria: 'Lectura Aleatoria (IOPS)',
-                        controladorNand: 'Controlador y Memoria NAND',
-                        memoriaCache: 'Caché DRAM Dedicada',
-                        durabilidadTbw: 'Durabilidad (TBW)',
-                        durabilidad: 'Construcción y Durabilidad',
-                        seguridad: 'Cifrado y Seguridad Hardware',
-                        certificacionEficiencia: 'Certificación de Eficiencia',
-                        certificacion: 'Certificación de Eficiencia',
-                        cableadoModular: 'Diseño de Cableado Modular',
-                        compatibilidadPcie5: 'Compatibilidad PCIe 5.0 / 12VHPWR',
-                        proteccionesElectricas: 'Protecciones Eléctricas',
-                        innovacionDiseno: 'Innovación de Diseño y Acceso',
-                        condensadores: 'Condensadores y Componentes',
-                        dimensiones: 'Dimensiones Físicas',
-                        peso: 'Peso del Chasis / Producto',
-                        soporteMotherboard: 'Soporte de Placa Madre',
-                        longitudMaximaGpu: 'Longitud Máx. Tarjeta Gráfica',
-                        alturaMaximaCooler: 'Altura Máx. Cooler de CPU',
-                        longitudMaximaPsu: 'Longitud Máx. Fuente de Poder',
-                        soporteRadiadores: 'Soporte de Radiadores Líquidos',
-                        ventiladoresIncluidos: 'Ventiladores Preinstalados',
-                        bahiasAlmacenamiento: 'Bahías de Almacenamiento',
-                        conectividadFrontal: 'Conectividad y Puertos Frontales',
-                        gestionCables: 'Sistema de Gestión de Cables',
-                        filtrosPolvo: 'Filtros Antipolvo',
-                        almacenamientoExtra: 'Compartimento Extra',
-                        disenoReversible: 'Diseño Reversible / Modular',
-                        tamanoRadiador: 'Tamaño y Material del Radiador',
-                        bombaAio: 'Motor de la Bomba AIO',
-                        bomba: 'Motor de la Bomba AIO',
-                        ventiladores: 'Ventiladores Incluidos',
-                        ventiladorVRM: 'Ventilador VRM Adicional',
-                        flujoAirePresion: 'Flujo de Aire y Presión Estática',
-                        tubosRefrigeracion: 'Mangueras y Tubos de Refrigeración',
-                        pastaTermica: 'Compuesto Térmico Incluido',
-                        nivelSonido: 'Nivel de Ruido Acústico',
-                        garantia: 'Garantía Oficial del Fabricante',
-                        tecnologias: 'Tecnologías y Características',
-                      };
-
-                      const displayLabel = labelMap[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                      const displayLabel = getSpecLabel(key);
 
                       return (
                         <div
