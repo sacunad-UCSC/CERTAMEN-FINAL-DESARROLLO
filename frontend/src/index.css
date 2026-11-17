@@ -1391,37 +1391,46 @@ body {
 }
 
 /* ============================================================
-   ANIMACIÓN LOADER IDÉNTICA AL VIDEO DE PCFACTORY
+   ANIMACIÓN LOADER CON LOGO OFICIAL DE PCÑACTORY
    ============================================================ */
-.pcf-glyph-p {
-  animation: pcf-move-up 0.8s infinite ease-in-out;
+.pcn-logo-floating {
+  animation: pcn-logo-float 1.2s infinite ease-in-out;
+  filter: drop-shadow(0 12px 24px rgba(0, 142, 204, 0.22));
 }
 
-.pcf-glyph-c {
-  animation: pcf-move-down 0.8s infinite ease-in-out;
+.pcn-logo-shadow {
+  width: 190px;
+  height: 14px;
+  background: radial-gradient(ellipse at center, rgba(0, 142, 204, 0.35) 0%, rgba(0, 142, 204, 0) 75%);
+  border-radius: 50%;
+  margin-top: 14px;
+  animation: pcn-shadow-anim 1.2s infinite ease-in-out;
 }
 
-@keyframes pcf-move-up {
+@keyframes pcn-logo-float {
   0% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-22px);
+    transform: translateY(-20px);
   }
   100% {
     transform: translateY(0);
   }
 }
 
-@keyframes pcf-move-down {
+@keyframes pcn-shadow-anim {
   0% {
-    transform: translateY(0);
+    transform: scale(1);
+    opacity: 0.55;
   }
   50% {
-    transform: translateY(22px);
+    transform: scale(0.72);
+    opacity: 0.2;
   }
   100% {
-    transform: translateY(0);
+    transform: scale(1);
+    opacity: 0.55;
   }
 }
 
