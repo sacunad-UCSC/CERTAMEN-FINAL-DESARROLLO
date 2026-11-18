@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Cpu, Lock, Mail, User, AlertCircle, ShieldCheck, Check } from 'lucide-react';
+import { Mail, User, AlertCircle, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import MFAChallenge from '../components/MFAChallenge';
 
 export default function LoginPage() {
@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -249,7 +250,7 @@ export default function LoginPage() {
           }}
         >
           <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--navy)', margin: '0 0 8px' }}>
-            {isLogin ? 'Login Account' : 'Create Account'}
+            {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
           </h1>
           <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 24px', lineHeight: 1.5 }}>
             {isLogin
@@ -293,7 +294,7 @@ export default function LoginPage() {
                 <input
                   type="text"
                   required
-                  placeholder="Full Name"
+                  placeholder="Nombre Completo"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   style={{
@@ -330,7 +331,7 @@ export default function LoginPage() {
               <input
                 type="email"
                 required
-                placeholder="Email Address"
+                placeholder="Correo Electrónico"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={{
@@ -364,9 +365,9 @@ export default function LoginPage() {
 
             <div style={{ position: 'relative' }}>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
-                placeholder="Password"
+                placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 style={{
@@ -391,17 +392,36 @@ export default function LoginPage() {
                   e.target.style.borderColor = 'rgba(255,255,255,0.7)';
                 }}
               />
-              <Lock
-                size={18}
-                color="#94a3b8"
-                style={{ position: 'absolute', right: '16px', top: '50%', transform: 'translateY(-50%)' }}
-              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                aria-pressed={showPassword}
+                title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                style={{
+                  position: 'absolute',
+                  right: '12px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '28px',
+                  height: '28px',
+                  display: 'grid',
+                  placeItems: 'center',
+                  border: 'none',
+                  background: 'transparent',
+                  color: '#94a3b8',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
             </div>
 
             {isLogin ? (
               <div style={{ textAlign: 'right', marginTop: '-4px' }}>
                 <a href="#forgot" style={{ fontSize: '12px', color: '#64748b', textDecoration: 'none' }}>
-                  Forgot Password?
+                  ¿Olvidaste tu contraseña?
                 </a>
               </div>
             ) : (
@@ -412,7 +432,7 @@ export default function LoginPage() {
                   onChange={(e) => setAgreeTerms(e.target.checked)}
                   style={{ accentColor: 'var(--primary)' }}
                 />
-                Agree with Our Terms &amp; Conditions
+                Acepto los Términos y Condiciones
               </label>
             )}
 
@@ -435,14 +455,14 @@ export default function LoginPage() {
                 transition: 'all 0.2s',
               }}
             >
-              {loading ? 'Procesando...' : isLogin ? 'Login Account' : 'Next and Continue'}
+              {loading ? 'Procesando...' : isLogin ? 'Iniciar Sesión' : 'Siguiente y Continuar'}
             </button>
           </form>
 
           {/* Botón Alternativo de cambio entre Login y Registro */}
           <div style={{ marginTop: '24px', textAlign: 'center' }}>
             <span style={{ fontSize: '12px', color: '#94a3b8', display: 'block', marginBottom: '10px' }}>
-              {isLogin ? "Don't Have an Account?" : 'Already Have an Account?'}
+              {isLogin ? '¿No tienes una cuenta?' : '¿Ya tienes una cuenta?'}
             </span>
             <button
               type="button"
@@ -469,7 +489,7 @@ export default function LoginPage() {
                 e.currentTarget.style.background = 'transparent';
               }}
             >
-              {isLogin ? 'Create Account' : 'Login Account'}
+              {isLogin ? 'Crear Cuenta' : 'Iniciar Sesión'}
             </button>
           </div>
             </>

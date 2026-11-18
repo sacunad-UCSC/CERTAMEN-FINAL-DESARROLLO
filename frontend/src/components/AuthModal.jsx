@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { X, Lock, Mail, User, AlertCircle } from 'lucide-react';
+import { X, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import MFAChallenge from './MFAChallenge';
 
 export default function AuthModal({ isOpen, onClose }) {
@@ -9,6 +9,7 @@ export default function AuthModal({ isOpen, onClose }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [mfaChallenge, setMfaChallenge] = useState(null);
@@ -174,16 +175,42 @@ export default function AuthModal({ isOpen, onClose }) {
 
           <div>
             <label style={{ fontSize: '12px', fontWeight: 700, display: 'block', marginBottom: '4px' }}>Contraseña</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              style={glassInputStyle}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{ ...glassInputStyle, paddingRight: '42px' }}
+                onFocus={handleInputFocus}
+                onBlur={handleInputBlur}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                aria-pressed={showPassword}
+                title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                style={{
+                  position: 'absolute',
+                  right: '8px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: '28px',
+                  height: '28px',
+                  display: 'grid',
+                  placeItems: 'center',
+                  border: 'none',
+                  background: 'transparent',
+                  color: '#94a3b8',
+                  padding: 0,
+                  cursor: 'pointer',
+                }}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <button
