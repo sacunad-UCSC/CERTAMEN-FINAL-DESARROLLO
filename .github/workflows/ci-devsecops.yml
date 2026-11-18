@@ -1,0 +1,83 @@
+name: CI/CD & DevSecOps Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  security-audit:
+    name: DevSecOps - SCA Security Audit (Backend)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: backend/package.json
+
+      - name: Instalar dependencias del Backend
+        run: |
+          cd backend
+          npm install --omit=dev
+
+      - name: Ejecutar Auditoría de Seguridad SCA (npm audit)
+        run: |
+          cd backend
+          # Falla el pipeline si existen vulnerabilidades críticas en dependencias de producción
+          npm audit --audit-level=critical
+
+  backend-build-test:
+    name: Backend Build & Integration Test
+    needs: security-audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar y verificar Backend
+        run: |
+          cd backend
+          npm install
+          npm test
+          node -e "console.log('✅ Validación de suite de pruebas unitarias completada');"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validar Sintaxis FastAPI (Hosting Server)
+        run: |
+          python -m py_compile hosting_fastapi/main.py hosting_fastapi/mfa_security.py
+          echo "✅ Sintaxis de servidor FastAPI y módulo MFA verificada con éxito"
+
+  frontend-build:
+    name: Frontend Build & Lint
+    needs: security-audit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar y compilar Frontend SPA
+        run: |
+          cd frontend
+          npm install
+          npm run build
+          echo "✅ Compilación de Frontend Vite completada exitosamente"

@@ -1,6 +1,9 @@
 # 🛒 NexoPC - Plataforma Segura de Venta de Componentes de PC
 ### Certamen Práctico Integrador | Desarrollo Web Seguro, DevOps y DevSecOps (UCSC)
 
+> 🌐 **URL de Producción en Vivo (HTTPS):** [https://nexopc.onrender.com](https://nexopc.onrender.com)  
+> 🔗 **Repositorio GitHub:** [https://github.com/sacunad-UCSC/CERTAMEN-FINAL-DESARROLLO](https://github.com/sacunad-UCSC/CERTAMEN-FINAL-DESARROLLO)
+
 ---
 
 ## 👥 Equipo de Desarrollo (Integrantes)
@@ -12,7 +15,7 @@
 ---
 
 ## 📌 1. Descripción del Proyecto y Caso de Negocio
-**PCStore** es una plataforma web empresarial diseñada para la presentación, cotización y comercialización de componentes de hardware y computación de alto rendimiento en Chile (GPUs RTX serie 4000, CPUs AMD Ryzen, Placas Madre AM5, Memorias RAM DDR5 y Almacenamiento NVMe Gen4).
+**NexoPC** es una plataforma web empresarial diseñada para la presentación, cotización y comercialización de componentes de hardware y computación de alto rendimiento en Chile (GPUs RTX serie 4000, CPUs AMD Ryzen, Placas Madre AM5, Memorias RAM DDR5 y Almacenamiento NVMe Gen4).
 
 La plataforma resuelve la necesidad de los usuarios de cotizar configuraciones personalizadas de hardware y consultar dudas técnicas, proporcionando a la organización un sistema centralizado y seguro para administrar el catálogo, pedidos y mensajes de clientes.
 
@@ -41,12 +44,14 @@ La plataforma resuelve la necesidad de los usuarios de cotizar configuraciones p
 ---
 
 ## 🛡️ 4. Prácticas DevSecOps y Seguridad Aplicada
-1. **Protección de Cabeceras HTTP**: Implementación de `helmet` para configurar CSP, HSTS, X-Content-Type-Options y anti-clickjacking.
-2. **Control de Acceso Cruzado (CORS)**: Restricción estricta a orígenes autorizados.
-3. **Mitigación de DoS y Fuerza Bruta**: `express-rate-limit` global y específico en endpoints de autenticación, contacto y chatbot.
-4. **Protección contra Inyecciones**: Validación de esquemas en servidor mediante `express-validator` y consultas parametrizadas con Mongoose.
-5. **Protección de Datos Sensibles**: Las contraseñas se excluyen por defecto en las consultas (`select: false`), evitando que viajen en respuestas JSON.
-6. **Auditoría SCA Continua**: Pipeline automatizado con `npm audit` que bloquea despliegues ante vulnerabilidades altas o críticas.
+1. **Autenticación Multifactor (MFA/TOTP)**: Integración obligatoria de Google Authenticator con secretos cifrados en base de datos mediante **AES-256-GCM**, control anti-repetición de códigos de 6 dígitos y bloqueo temporal por fuerza bruta.
+2. **Protección de Cabeceras HTTP**: Implementación de `helmet` / FastAPI security headers para configurar CSP, HSTS, X-Content-Type-Options y anti-clickjacking.
+3. **Control de Acceso Cruzado (CORS)**: Restricción estricta a orígenes autorizados.
+4. **Mitigación de DoS y Fuerza Bruta**: Rate-limiting global y específico en endpoints de autenticación, contacto y chatbot.
+5. **Protección contra Inyecciones**: Validación de esquemas en servidor mediante `express-validator` / Pydantic y consultas parametrizadas con Mongoose / PyMongo.
+6. **Protección de Datos Sensibles**: Las contraseñas se excluyen por defecto en las consultas (`select: false`), evitando que viajen en respuestas JSON.
+7. **Auditoría SCA Continua**: Pipeline de CI/CD automatizado en GitHub Actions con `npm audit` que bloquea despliegues ante vulnerabilidades.
+8. **Análisis DAST Comparativo**: Escaneo de seguridad dinámico con OWASP ZAP documentado en `docs/INFORME_VULNERABILIDADES_OWASP_ZAP.md`.
 
 ---
 

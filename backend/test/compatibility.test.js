@@ -65,7 +65,7 @@ const checkCompatibility = (build, catalog = []) => {
   };
 };
 
-describe('Motor de Compatibilidad y Asistente de Reemplazo PcÑactory', () => {
+describe('Motor de Compatibilidad y Asistente de Reemplazo NexoPC', () => {
   const mockCatalog = [
     { _id: '1', name: 'ASUS ROG Strix B650-A Gaming WiFi AM5', category: 'Placas Madre', socket: 'AM5', price: 279990 },
     { _id: '2', name: 'ASUS ROG Maximus Z790 Dark Hero LGA1700', category: 'Placas Madre', socket: 'LGA1700', price: 679990 },

@@ -1,11 +1,11 @@
-# 📊 Modelo de Base de Datos NoSQL en Español (MongoDB) - PCStore
+# 📊 Modelo de Base de Datos NoSQL en Español (MongoDB) - NexoPC
 ### Certamen Práctico Integrador | UCSC 2026
 
 Toda la base de datos ha sido reestructurada en **idioma español** tanto a nivel de colecciones físicas como de campos y subdocumentos.
 
 ---
 
-## 🗂️ 1. Colecciones en Español (MongoDB: `pc_store_db`)
+## 🗂️ 1. Colecciones en Español (MongoDB: `pc_nfactory_db`)
 
 | Colección | Descripción | Campos Clave en Español |
 | :--- | :--- | :--- |
@@ -83,7 +83,7 @@ Toda la base de datos ha sido reestructurada en **idioma español** tanto a nive
 {
   "_id": "ObjectId('67364eb0e2b5c00...')",
   "nombre": "Administrador UCSC",
-  "correo": "admin@pcstore.cl",
+  "correo": "admin@nexopc.cl",
   "clave": "$2a$12$Z1x... (Hash seguro con salt 12)",
   "rol": "Administrador",
   "telefono": "+56912345678",
