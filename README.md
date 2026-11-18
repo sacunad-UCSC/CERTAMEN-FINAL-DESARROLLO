@@ -1,4 +1,4 @@
-# 🛒 PcÑactory - Plataforma Segura de Venta de Componentes de PC
+# 🛒 NexoPC - Plataforma Segura de Venta de Componentes de PC
 ### Certamen Práctico Integrador | Desarrollo Web Seguro, DevOps y DevSecOps (UCSC)
 
 ---
