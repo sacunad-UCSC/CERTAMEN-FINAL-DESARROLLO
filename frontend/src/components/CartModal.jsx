@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
-export default function CartModal({ isOpen, onClose, onCheckoutSuccess, onOpenProductDetail }) {
+export default function CartModal({ isOpen, onClose, onCheckoutSuccess, onOpenProductDetail, onRequireAuth }) {
   const { cart, removeFromCart, addToCart, clearCart, totalPrice, totalItems } = useCart();
   const { user, token } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -22,6 +22,10 @@ export default function CartModal({ isOpen, onClose, onCheckoutSuccess, onOpenPr
 
   const handleFinalizarPedido = async () => {
     if (cart.length === 0) return;
+    if (!user) {
+      if (onRequireAuth) onRequireAuth();
+      return;
+    }
     setError('');
     setLoading(true);
 

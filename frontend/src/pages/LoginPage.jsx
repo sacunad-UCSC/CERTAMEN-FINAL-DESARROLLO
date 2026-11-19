@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { Mail, User, AlertCircle, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import MFAChallenge from '../components/MFAChallenge';
 
-export default function LoginPage() {
+export default function LoginPage({ onClose, onSuccess }) {
   const { login, register } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState('');
@@ -39,8 +39,10 @@ export default function LoginPage() {
         setMfaChallenge(res);
         return;
       }
-      if (!res.success) {
-        setError(res.message || 'Error en la autenticación. Verifica tus credenciales.');
+      if (res?.success) {
+        if (onSuccess) onSuccess();
+      } else {
+        setError(res?.message || 'Error en la autenticación. Verifica tus credenciales.');
       }
     } catch (err) {
       setLoading(false);
@@ -249,9 +251,29 @@ export default function LoginPage() {
             justifyContent: 'center',
           }}
         >
-          <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--navy)', margin: '0 0 8px' }}>
-            {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
-          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '0 0 8px' }}>
+            <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--navy)', margin: 0 }}>
+              {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
+            </h1>
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '24px',
+                  lineHeight: '1',
+                  cursor: 'pointer',
+                  color: '#64748b',
+                  padding: '4px',
+                }}
+                title="Cerrar"
+              >
+                &times;
+              </button>
+            )}
+          </div>
           <p style={{ fontSize: '13px', color: '#64748b', margin: '0 0 24px', lineHeight: 1.5 }}>
             {isLogin
               ? 'Ingresa tus credenciales para acceder a tu cuenta protegida con JWT.'
@@ -284,7 +306,10 @@ export default function LoginPage() {
             <MFAChallenge
               challenge={mfaChallenge}
               onCancel={() => setMfaChallenge(null)}
-              onSuccess={() => setMfaChallenge(null)}
+              onSuccess={() => {
+                setMfaChallenge(null);
+                if (onSuccess) onSuccess();
+              }}
             />
           ) : (
             <>

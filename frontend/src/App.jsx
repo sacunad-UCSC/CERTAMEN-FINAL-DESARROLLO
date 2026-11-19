@@ -56,6 +56,7 @@ export default function App() {
   const [newOrderAlert, setNewOrderAlert] = useState(null);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [productViewId, setProductViewId] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -99,18 +100,16 @@ export default function App() {
 
   // Cargar catálogo inicial sin filtros para tener el conteo total siempre exacto
   useEffect(() => {
-    if (user) {
-      api.getProducts().then((res) => {
-        if (res && res.success) {
-          setTotalCatalogCount(res.count || res.products.length);
-        }
-      });
-    }
-  }, [user]);
+    api.getProducts().then((res) => {
+      if (res && res.success) {
+        setTotalCatalogCount(res.count || res.products.length);
+      }
+    });
+  }, []);
 
   useEffect(() => {
-    if (user) loadProducts();
-  }, [user, selectedCategory, searchFilter]);
+    loadProducts();
+  }, [selectedCategory, searchFilter]);
 
   const handleNavigate = (tab) => {
     if (productViewId) {
@@ -129,47 +128,38 @@ export default function App() {
     setCurrentTab('home');
   };
 
+  // Función auxiliar: si no hay sesión, mostrar login modal en vez de ejecutar acción protegida
+  const requireAuth = (action) => {
+    if (!user) {
+      setShowLoginModal(true);
+      return;
+    }
+    action();
+  };
+
   if (loading) {
     return <LogoLoader fullPage={true} message="Cargando portal seguro NexoPC..." />;
-  }
-
-  // Si el usuario no ha iniciado sesión pero hay un producto en la URL, mostrar la ficha pública
-  if (!user && productViewId) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
-        <ProductDetailPage
-          productId={productViewId}
-          onNavigateHome={() => {
-            setProductViewId(null);
-            window.history.pushState({}, '', '/');
-          }}
-          onArmarPc={() => {
-            setProductViewId(null);
-            window.history.pushState({}, '', '/');
-          }}
-          onOpenCart={() => {}}
-        />
-      </div>
-    );
-  }
-
-  // Si el usuario no ha iniciado sesión, se muestra la pantalla de login/registro
-  if (!user) {
-    return <LoginPage />;
   }
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Navbar
         currentTab={currentTab}
-        onNavigate={handleNavigate}
-        onOpenAuth={() => {}}
+        onNavigate={(tab) => {
+          // Tabs protegidos: admin, builder
+          if ((tab === 'admin' || tab === 'builder') && !user) {
+            setShowLoginModal(true);
+            return;
+          }
+          handleNavigate(tab);
+        }}
+        onOpenAuth={() => setShowLoginModal(true)}
         onSearch={handleSearch}
-        onOpenProfile={(tab = 'orders') => {
+        onOpenProfile={(tab = 'orders') => requireAuth(() => {
           setProfileInitialTab(tab);
           setIsProfileOpen(true);
-        }}
-        onOpenChangePassword={() => setIsChangePasswordOpen(true)}
+        })}
+        onOpenChangePassword={() => requireAuth(() => setIsChangePasswordOpen(true))}
         onOpenCart={() => setIsCartModalOpen(true)}
       />
 
@@ -461,6 +451,10 @@ export default function App() {
                     className="btn-primary"
                     style={{ width: '100%' }}
                     onClick={async () => {
+                      if (!user) {
+                        setShowLoginModal(true);
+                        return;
+                      }
                       try {
                         const orderData = {
                           items: cart.map(item => ({
@@ -532,6 +526,7 @@ export default function App() {
           setCurrentTab('home');
         }}
         onOpenProductDetail={handleOpenProductDetail}
+        onRequireAuth={() => setShowLoginModal(true)}
       />
 
       {/* Modal de Detalle y Especificaciones Técnicas de Producto */}
@@ -667,6 +662,40 @@ export default function App() {
             >
               Aceptar y Volver a la Tienda
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal / Diálogo de Inicio de Sesión cuando se requiere autenticación para comprar */}
+      {showLoginModal && (
+        <div
+          onClick={() => setShowLoginModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(15, 23, 42, 0.7)',
+            backdropFilter: 'blur(6px)',
+            zIndex: 10000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            overflowY: 'auto',
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              width: '100%',
+              maxWidth: '920px',
+              margin: 'auto',
+            }}
+          >
+            <LoginPage
+              onClose={() => setShowLoginModal(false)}
+              onSuccess={() => setShowLoginModal(false)}
+            />
           </div>
         </div>
       )}
