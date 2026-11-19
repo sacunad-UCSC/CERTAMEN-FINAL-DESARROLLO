@@ -57,6 +57,14 @@ export default function App() {
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [isCartModalOpen, setIsCartModalOpen] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [pageViewMode, setPageViewMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('vista') === 'perfil' || params.get('perfil')) return 'profile';
+      if (params.get('vista') === 'carro' || params.get('carro') || params.get('cart')) return 'cart';
+    }
+    return null;
+  });
   const [productViewId, setProductViewId] = useState(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
@@ -66,12 +74,24 @@ export default function App() {
   });
   const { cart, addToCart, removeFromCart, clearCart, totalPrice } = useCart();
 
+  // Abrir ventana en nueva pestaña con loader tal como los productos
+  const openTabInNewWindow = (type, param = '') => {
+    let targetUrl = '/';
+    if (type === 'producto') {
+      targetUrl = `/?producto=${encodeURIComponent(param)}`;
+    } else if (type === 'carro') {
+      targetUrl = `/?vista=carro`;
+    } else if (type === 'perfil') {
+      targetUrl = `/?vista=perfil`;
+    }
+    window.open(targetUrl, '_blank');
+  };
+
   // Abrir producto en nueva pestaña con loader animado tal como en el video
   const openProductInNewTab = (p) => {
     if (!p) return;
     const identifier = p.sku || p._id || p.id || p.codigoSku;
-    const targetUrl = `/?producto=${encodeURIComponent(identifier)}`;
-    window.open(targetUrl, '_blank');
+    openTabInNewWindow('producto', identifier);
   };
 
   const handleOpenProductDetail = (prodOrItem) => {
@@ -112,8 +132,9 @@ export default function App() {
   }, [selectedCategory, searchFilter]);
 
   const handleNavigate = (tab) => {
-    if (productViewId) {
+    if (productViewId || pageViewMode) {
       setProductViewId(null);
+      setPageViewMode(null);
       window.history.pushState({}, '', '/');
     }
     setCurrentTab(tab);
@@ -121,8 +142,9 @@ export default function App() {
 
   const handleSearch = (term) => {
     setSearchFilter(term);
-    if (productViewId) {
+    if (productViewId || pageViewMode) {
       setProductViewId(null);
+      setPageViewMode(null);
       window.history.pushState({}, '', '/');
     }
     setCurrentTab('home');
@@ -155,12 +177,12 @@ export default function App() {
         }}
         onOpenAuth={() => setShowLoginModal(true)}
         onSearch={handleSearch}
-        onOpenProfile={(tab = 'orders') => requireAuth(() => {
+        onOpenProfile={(tab = 'orders') => {
           setProfileInitialTab(tab);
-          setIsProfileOpen(true);
-        })}
+          openTabInNewWindow('perfil');
+        }}
         onOpenChangePassword={() => requireAuth(() => setIsChangePasswordOpen(true))}
-        onOpenCart={() => setIsCartModalOpen(true)}
+        onOpenCart={() => openTabInNewWindow('carro')}
       />
 
       <main className="main-content-area" style={{ flex: 1 }}>
@@ -179,8 +201,281 @@ export default function App() {
               window.history.pushState({}, '', '/');
               setCurrentTab('builder');
             }}
-            onOpenCart={() => setIsCartModalOpen(true)}
+            onOpenCart={() => openTabInNewWindow('carro')}
           />
+        ) : pageViewMode === 'cart' ? (
+          /* VISTA DEDICADA DE CARRO DE COMPRAS (FORMATO PESTAÑA / VENTANA COMPLETA) */
+          <div style={{ background: '#f8fafc', minHeight: '85vh', padding: '30px 20px 60px' }}>
+            <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--navy)', margin: 0 }}>
+                  Carro de Compras &bull; NexoPC
+                </h1>
+                <button
+                  className="btn-secondary"
+                  onClick={() => {
+                    setPageViewMode(null);
+                    window.history.pushState({}, '', '/');
+                    setCurrentTab('home');
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    background: '#fff',
+                    cursor: 'pointer',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                  }}
+                >
+                  &larr; Continuar Comprando
+                </button>
+              </div>
+
+              {cart.length === 0 ? (
+                <div
+                  style={{
+                    background: '#ffffff',
+                    padding: '60px 20px',
+                    borderRadius: '16px',
+                    textAlign: 'center',
+                    border: '1px solid #e2e8f0',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.03)',
+                  }}
+                >
+                  <ShoppingCart size={54} style={{ color: '#94a3b8', margin: '0 auto 16px' }} />
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--navy)', marginBottom: '8px' }}>
+                    Tu carro está vacío
+                  </h3>
+                  <p style={{ color: '#64748b', marginBottom: '24px' }}>
+                    Explora nuestro catálogo oficial con componentes gamer de última generación.
+                  </p>
+                  <button
+                    className="btn-primary"
+                    onClick={() => {
+                      setPageViewMode(null);
+                      window.history.pushState({}, '', '/');
+                      setCurrentTab('home');
+                    }}
+                  >
+                    Ver Catálogo Completo
+                  </button>
+                </div>
+              ) : (
+                <div className="cart-layout-grid" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', alignItems: 'start' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                    {cart.map((item) => (
+                      <div
+                        key={item._id}
+                        style={{
+                          background: '#ffffff',
+                          padding: '18px',
+                          borderRadius: '14px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '16px',
+                          border: '1px solid #e2e8f0',
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                        }}
+                      >
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          onClick={() => openProductInNewTab(item)}
+                          style={{ width: '70px', height: '70px', objectFit: 'contain', cursor: 'pointer', borderRadius: '8px', border: '1px solid #f1f5f9' }}
+                        />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <span style={{ fontSize: '11px', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase' }}>
+                            {item.brand}
+                          </span>
+                          <h4
+                            onClick={() => openProductInNewTab(item)}
+                            style={{ fontSize: '15px', fontWeight: 700, margin: '2px 0 6px 0', color: 'var(--navy)', cursor: 'pointer' }}
+                          >
+                            {item.name}
+                          </h4>
+                          <div style={{ fontSize: '14px', color: 'var(--primary)', fontWeight: 800 }}>
+                            ${item.price.toLocaleString('es-CL')} &times; {item.quantity} = ${(item.price * item.quantity).toLocaleString('es-CL')}
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <button
+                            onClick={() => removeFromCart(item._id)}
+                            style={{
+                              background: '#fee2e2',
+                              border: 'none',
+                              color: '#ef4444',
+                              cursor: 'pointer',
+                              padding: '8px 12px',
+                              borderRadius: '8px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontWeight: 700,
+                              fontSize: '12px',
+                            }}
+                          >
+                            <Trash2 size={16} /> Quitar
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div
+                    style={{
+                      background: '#ffffff',
+                      padding: '26px',
+                      borderRadius: '16px',
+                      border: '1px solid #e2e8f0',
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.04)',
+                      position: 'sticky',
+                      top: '90px',
+                    }}
+                  >
+                    <h3 style={{ fontSize: '18px', fontWeight: 800, marginBottom: '18px', color: 'var(--navy)' }}>
+                      Resumen del Pedido
+                    </h3>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '14px' }}>
+                      <span style={{ color: '#64748b' }}>Subtotal</span>
+                      <strong style={{ color: 'var(--navy)' }}>${totalPrice.toLocaleString('es-CL')}</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', fontSize: '14px', color: '#10b981' }}>
+                      <span>Despacho Chilexpress</span>
+                      <strong>Gratis</strong>
+                    </div>
+                    <hr style={{ border: 'none', borderTop: '1px solid #e2e8f0', margin: '14px 0' }} />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '22px', fontSize: '20px' }}>
+                      <strong style={{ color: 'var(--navy)' }}>Total a Pagar</strong>
+                      <strong style={{ color: 'var(--primary)' }}>${totalPrice.toLocaleString('es-CL')}</strong>
+                    </div>
+
+                    <button
+                      className="btn-primary"
+                      style={{ width: '100%', padding: '14px', fontSize: '15px', fontWeight: 800 }}
+                      onClick={async () => {
+                        if (!user) {
+                          setShowLoginModal(true);
+                          return;
+                        }
+                        try {
+                          const orderData = {
+                            items: cart.map((item) => ({
+                              productId: item._id,
+                              name: item.name,
+                              nombre: item.name,
+                              price: item.price,
+                              precio: item.price,
+                              quantity: item.quantity,
+                              cantidad: item.quantity,
+                              subtotal: item.price * item.quantity,
+                            })),
+                            total: totalPrice,
+                            customer: {
+                              name: user.name,
+                              nombre: user.name,
+                              email: user.email,
+                              correo: user.email,
+                              phone: '+56987654321',
+                            },
+                            shippingAddress: {
+                              calle: 'Av. Paicaví 3280',
+                              address: 'Av. Paicaví 3280',
+                              ciudad: 'Concepción',
+                              city: 'Concepción',
+                              region: 'Biobío',
+                            },
+                            paymentMethod: 'Webpay Plus (Débito/Crédito)',
+                          };
+                          const authToken = localStorage.getItem('token');
+                          const res = await api.createOrder(orderData, authToken);
+                          clearCart();
+                          const orderNum = res?.orderNumber || res?.numeroPedido || res?.order?.numeroPedido || 'Reciente';
+                          setNewOrderAlert(orderNum);
+                          setProfileInitialTab('orders');
+                          setPageViewMode('profile');
+                        } catch (e) {
+                          console.error('Error guardando pedido:', e);
+                          clearCart();
+                          setProfileInitialTab('orders');
+                          setPageViewMode('profile');
+                        }
+                      }}
+                    >
+                      Finalizar Pedido y Pagar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : pageViewMode === 'profile' ? (
+          /* VISTA DEDICADA DE PERFIL & MIS COMPRAS (FORMATO PESTAÑA / VENTANA COMPLETA) */
+          <div style={{ background: '#f8fafc', minHeight: '85vh', padding: '30px 20px 60px' }}>
+            <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+                <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--navy)', margin: 0 }}>
+                  Panel de Usuario &bull; Mis Compras & Pedidos
+                </h1>
+                <button
+                  className="btn-secondary"
+                  onClick={() => {
+                    setPageViewMode(null);
+                    window.history.pushState({}, '', '/');
+                    setCurrentTab('home');
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #cbd5e1',
+                    background: '#fff',
+                    cursor: 'pointer',
+                    fontWeight: 700,
+                    fontSize: '13px',
+                  }}
+                >
+                  &larr; Volver a la Tienda
+                </button>
+              </div>
+
+              {!user ? (
+                <div style={{ background: '#fff', padding: '50px 20px', borderRadius: '16px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--navy)', marginBottom: '8px' }}>
+                    Debes iniciar sesión para consultar tus pedidos
+                  </h3>
+                  <p style={{ color: '#64748b', marginBottom: '20px' }}>
+                    Accede a tu cuenta con JWT para ver tu historial de compras y estado de envíos.
+                  </p>
+                  <button className="btn-primary" onClick={() => setShowLoginModal(true)}>
+                    Iniciar Sesión Ahora
+                  </button>
+                </div>
+              ) : (
+                <UserProfileModal
+                  initialTab={profileInitialTab}
+                  newOrderAlert={newOrderAlert}
+                  onClose={() => {
+                    setPageViewMode(null);
+                    window.history.pushState({}, '', '/');
+                    setCurrentTab('home');
+                  }}
+                  onOpenChangePassword={() => setIsChangePasswordOpen(true)}
+                  onNavigateAdmin={() => {
+                    setPageViewMode(null);
+                    window.history.pushState({}, '', '/');
+                    setCurrentTab('admin');
+                  }}
+                  onOpenProductDetail={handleOpenProductDetail}
+                  onExploreProducts={() => {
+                    setPageViewMode(null);
+                    window.history.pushState({}, '', '/');
+                    setCurrentTab('home');
+                  }}
+                />
+              )}
+            </div>
+          </div>
         ) : (
           <>
             {/* VISTA: INICIO / TIENDA */}
@@ -477,7 +772,9 @@ export default function App() {
                           },
                           shippingAddress: {
                             calle: 'Av. Paicaví 3280',
+                            address: 'Av. Paicaví 3280',
                             ciudad: 'Concepción',
+                            city: 'Concepción',
                             region: 'Biobío',
                           },
                           paymentMethod: 'Webpay Plus (Débito/Crédito)'
@@ -485,7 +782,7 @@ export default function App() {
                         const authToken = localStorage.getItem('token');
                         const res = await api.createOrder(orderData, authToken);
                         clearCart();
-                        const orderNum = res?.orderNumber || res?.numeroPedido || 'Reciente';
+                        const orderNum = res?.orderNumber || res?.numeroPedido || res?.order?.numeroPedido || 'Reciente';
                         setNewOrderAlert(orderNum);
                         setProfileInitialTab('orders');
                         setIsProfileOpen(true);
@@ -522,8 +819,7 @@ export default function App() {
         onCheckoutSuccess={(orderNum) => {
           setNewOrderAlert(orderNum);
           setProfileInitialTab('orders');
-          setIsProfileOpen(true);
-          setCurrentTab('home');
+          setPageViewMode('profile');
         }}
         onOpenProductDetail={handleOpenProductDetail}
         onRequireAuth={() => setShowLoginModal(true)}

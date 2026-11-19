@@ -51,7 +51,9 @@ export default function CartModal({ isOpen, onClose, onCheckoutSuccess, onOpenPr
         },
         shippingAddress: {
           calle: 'Av. Paicaví 3280',
+          address: 'Av. Paicaví 3280',
           ciudad: 'Concepción',
+          city: 'Concepción',
           region: 'Biobío',
         },
         paymentMethod: 'Webpay Plus (Débito/Crédito)',
@@ -64,7 +66,7 @@ export default function CartModal({ isOpen, onClose, onCheckoutSuccess, onOpenPr
         clearCart();
         onClose();
         if (onCheckoutSuccess) {
-          onCheckoutSuccess(res.orderNumber || res.numeroPedido || 'Reciente');
+          onCheckoutSuccess(res.orderNumber || res.numeroPedido || res?.order?.numeroPedido || 'Reciente');
         }
       } else {
         setError(res?.message || 'Error al procesar el pedido. Intenta nuevamente.');

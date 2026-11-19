@@ -27,7 +27,7 @@ export default function UserProfileModal({
     if (activeTab === 'orders') {
       loadMyOrders();
     }
-  }, [activeTab, token]);
+  }, [activeTab, token, newOrderAlert]);
 
   const loadMyOrders = async () => {
     setLoadingOrders(true);

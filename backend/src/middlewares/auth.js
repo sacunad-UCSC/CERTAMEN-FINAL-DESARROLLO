@@ -23,6 +23,21 @@ const protect = async (req, res, next) => {
   }
 };
 
+// Middleware opcional para poblar req.user si viene un token válido en la cabecera
+const optionalAuth = async (req, res, next) => {
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    try {
+      const token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+      req.user = await Usuario.findById(decoded.id).select('-clave');
+    } catch (error) {
+      // Si el token es inválido, simplemente continúa como visitante
+      req.user = null;
+    }
+  }
+  next();
+};
+
 const restrictTo = (...roles) => {
   return (req, res, next) => {
     if (!roles.includes(req.user.rol)) {
@@ -34,4 +49,4 @@ const restrictTo = (...roles) => {
   };
 };
 
-module.exports = { protect, restrictTo };
+module.exports = { protect, optionalAuth, restrictTo };

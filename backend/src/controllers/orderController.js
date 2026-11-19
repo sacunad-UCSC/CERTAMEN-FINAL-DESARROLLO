@@ -119,7 +119,13 @@ exports.getAllOrders = async (req, res, next) => {
 
 exports.getMyOrders = async (req, res, next) => {
   try {
-    const pedidos = await Pedido.find({ usuario: req.user._id }).sort({ createdAt: -1 });
+    // Buscar tanto por usuario ObjectId como por correo electrónico en caso de órdenes creadas sin vínculo directo
+    const pedidos = await Pedido.find({
+      $or: [
+        { usuario: req.user._id },
+        { 'cliente.correo': req.user.correo.toLowerCase() },
+      ],
+    }).sort({ createdAt: -1 });
     res.json({ success: true, count: pedidos.length, orders: pedidos });
   } catch (error) {
     next(error);
