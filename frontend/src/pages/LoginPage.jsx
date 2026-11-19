@@ -418,13 +418,7 @@ export default function LoginPage() {
               </button>
             </div>
 
-            {isLogin ? (
-              <div style={{ textAlign: 'right', marginTop: '-4px' }}>
-                <a href="#forgot" style={{ fontSize: '12px', color: '#64748b', textDecoration: 'none' }}>
-                  ¿Olvidaste tu contraseña?
-                </a>
-              </div>
-            ) : (
+            {!isLogin && (
               <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#64748b', cursor: 'pointer' }}>
                 <input
                   type="checkbox"

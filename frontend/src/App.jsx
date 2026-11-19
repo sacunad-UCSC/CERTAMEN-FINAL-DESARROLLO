@@ -133,6 +133,26 @@ export default function App() {
     return <LogoLoader fullPage={true} message="Cargando portal seguro NexoPC..." />;
   }
 
+  // Si el usuario no ha iniciado sesión pero hay un producto en la URL, mostrar la ficha pública
+  if (!user && productViewId) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#f8fafc' }}>
+        <ProductDetailPage
+          productId={productViewId}
+          onNavigateHome={() => {
+            setProductViewId(null);
+            window.history.pushState({}, '', '/');
+          }}
+          onArmarPc={() => {
+            setProductViewId(null);
+            window.history.pushState({}, '', '/');
+          }}
+          onOpenCart={() => {}}
+        />
+      </div>
+    );
+  }
+
   // Si el usuario no ha iniciado sesión, se muestra la pantalla de login/registro
   if (!user) {
     return <LoginPage />;
