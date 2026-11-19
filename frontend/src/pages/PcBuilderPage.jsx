@@ -7,22 +7,15 @@ import {
   Zap,
   Box,
   Wind,
-  CheckCircle2,
-  AlertTriangle,
-  XCircle,
   Plus,
   Trash2,
   RotateCcw,
   ShoppingCart,
-  Gauge,
   Check,
   Sparkles,
-  RefreshCw,
   ArrowRightLeft,
-  Info,
 } from 'lucide-react';
 import { api } from '../services/api';
-import { checkCompatibility } from '../services/compatibilityEngine';
 import { useCart } from '../context/CartContext';
 
 // Ranuras configurables para el armado
@@ -102,9 +95,6 @@ export default function PcBuilderPage({ onNavigate, initialProduct, onClearIniti
     fetchCatalog();
   }, []);
 
-  // Ejecución del motor con catálogo completo para obtener sugerencias de reemplazo
-  const analysis = checkCompatibility(selectedParts, allProducts);
-
   const selectedCount = Object.values(selectedParts).filter(Boolean).length;
   const totalPrice = Object.values(selectedParts).reduce((acc, part) => (part ? acc + part.price : acc), 0);
 
@@ -115,15 +105,6 @@ export default function PcBuilderPage({ onNavigate, initialProduct, onClearIniti
     }));
     setActiveModalSlot(null);
     setSearchTerm('');
-  };
-
-  const handleSwapProduct = (slotId, newProduct) => {
-    setSelectedParts((prev) => ({
-      ...prev,
-      [slotId]: newProduct,
-    }));
-    setAddedToast(`¡Componente cambiado con éxito por ${newProduct.name}!`);
-    setTimeout(() => setAddedToast(''), 4000);
   };
 
   const handleRemoveProduct = (slotId) => {
@@ -185,7 +166,7 @@ export default function PcBuilderPage({ onNavigate, initialProduct, onClearIniti
               gap: '6px',
             }}
           >
-            <Sparkles size={16} /> ASESOR INTELIGENTE DE HARDWARE
+            <Sparkles size={16} /> CONFIGURADOR DE HARDWARE
           </span>
           <span style={{ color: 'var(--text-muted)', fontSize: '14px' }}>
             {selectedCount} de {BUILD_SLOTS.length} partes seleccionadas
@@ -195,7 +176,7 @@ export default function PcBuilderPage({ onNavigate, initialProduct, onClearIniti
           Arma tu Computador Gamer a Medida
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '15px', maxWidth: '850px', marginTop: '6px' }}>
-          Configura tus componentes con diagnóstico de hardware en vivo. Si un componente es incompatible, defectuoso o provoca cuello de botella, el sistema te recomendará <strong>por cuáles alternativas exactas puedes cambiarlo</strong> con un solo clic.
+          Selecciona tus componentes favoritos y calcula el presupuesto total de tu equipo en tiempo real.
         </p>
       </div>
 
@@ -219,136 +200,6 @@ export default function PcBuilderPage({ onNavigate, initialProduct, onClearIniti
           }}
         >
           <Check size={20} /> {addedToast}
-        </div>
-      )}
-
-      {/* SECCIÓN DESTACADA: ASISTENTE DE REEMPLAZO SI HAY INCOMPATIBILIDADES O ADVERTENCIAS */}
-      {analysis.replacementSuggestions.length > 0 && (
-        <div
-          style={{
-            background: '#eff6ff',
-            border: '2px solid #3b82f6',
-            borderRadius: '16px',
-            padding: '24px',
-            marginBottom: '32px',
-            boxShadow: '0 8px 24px rgba(59, 130, 246, 0.1)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <div
-              style={{
-                background: '#3b82f6',
-                color: '#fff',
-                width: '38px',
-                height: '38px',
-                borderRadius: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <RefreshCw size={20} />
-            </div>
-            <div>
-              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#1e3a8a', margin: 0 }}>
-                Opciones Recomendadas para Resolver Incompatibilidades o Cuello de Botella
-              </h3>
-              <p style={{ fontSize: '13px', color: '#3b82f6', margin: '2px 0 0 0' }}>
-                Detectamos problemas con componentes actuales. Puedes cambiarlos inmediatamente por estas opciones garantizadas:
-              </p>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {analysis.replacementSuggestions.map((sugg, sIdx) => {
-              const currentComp = selectedParts[sugg.targetSlot];
-
-              return (
-                <div
-                  key={sIdx}
-                  style={{
-                    background: '#ffffff',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    border: '1px solid #bfdbfe',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                    <ArrowRightLeft size={16} color="#2563eb" />
-                    <span style={{ fontSize: '13px', fontWeight: 700, color: '#1e40af' }}>
-                      {sugg.reason}
-                    </span>
-                  </div>
-
-                  {/* Tarjetas de componentes alternativos recomendados */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
-                    {sugg.options.map((opt) => {
-                      const priceDiff = currentComp ? opt.price - currentComp.price : opt.price;
-
-                      return (
-                        <div
-                          key={opt._id}
-                          style={{
-                            background: '#f8fafc',
-                            border: '1px solid #e2e8f0',
-                            borderRadius: '10px',
-                            padding: '12px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            gap: '10px',
-                          }}
-                        >
-                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                            <img
-                              src={opt.imageUrl}
-                              alt={opt.name}
-                              style={{ width: '50px', height: '50px', objectFit: 'contain', borderRadius: '6px', background: '#fff', border: '1px solid #e2e8f0' }}
-                            />
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                              <span style={{ fontSize: '10px', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase' }}>
-                                {opt.brand}
-                              </span>
-                              <h5 style={{ fontSize: '13px', fontWeight: 700, color: 'var(--navy)', margin: '2px 0', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                {opt.name}
-                              </h5>
-                              <div style={{ fontSize: '13px', fontWeight: 800, color: 'var(--navy)' }}>
-                                ${opt.price.toLocaleString('es-CL')}
-                              </div>
-                            </div>
-                          </div>
-
-                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid #e2e8f0' }}>
-                            <span style={{ fontSize: '11px', color: priceDiff > 0 ? '#b45309' : priceDiff < 0 ? '#15803d' : '#64748b', fontWeight: 700 }}>
-                              {currentComp ? (priceDiff > 0 ? `+ $${priceDiff.toLocaleString('es-CL')}` : priceDiff < 0 ? `- $${Math.abs(priceDiff).toLocaleString('es-CL')}` : 'Mismo precio') : 'Nuevo componente'}
-                            </span>
-                            <button
-                              onClick={() => handleSwapProduct(sugg.targetSlot, opt)}
-                              style={{
-                                background: '#2563eb',
-                                color: '#ffffff',
-                                border: 'none',
-                                padding: '6px 12px',
-                                borderRadius: '6px',
-                                fontSize: '12px',
-                                fontWeight: 700,
-                                cursor: 'pointer',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                              }}
-                            >
-                              <Check size={14} /> Cambiar por este
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
         </div>
       )}
 
@@ -516,140 +367,10 @@ export default function PcBuilderPage({ onNavigate, initialProduct, onClearIniti
           })}
         </div>
 
-        {/* Columna Derecha: Motor de Análisis, Cuello de Botella y Resumen */}
+        {/* Columna Derecha: Resumen de Presupuesto */}
         <div style={{ position: 'sticky', top: '90px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
           
-          {/* Card 1: Diagnóstico de Compatibilidad */}
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '14px',
-              border: analysis.isCompatible ? '1.5px solid #10b981' : '1.5px solid #ef4444',
-              padding: '20px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.04)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '14px' }}>
-              {analysis.isCompatible ? (
-                <CheckCircle2 size={24} color="#10b981" />
-              ) : (
-                <XCircle size={24} color="#ef4444" />
-              )}
-              <h3 style={{ fontSize: '16px', fontWeight: 800, color: 'var(--navy)' }}>
-                {analysis.isCompatible ? 'Hardware 100% Compatible' : 'Incompatibilidad Detectada'}
-              </h3>
-            </div>
-
-            {/* Listado de Errores Críticos */}
-            {analysis.issues.length > 0 && (
-              <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '8px', padding: '12px', marginBottom: '12px' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#b91c1c', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <XCircle size={14} /> Problemas de Hardware:
-                </div>
-                {analysis.issues.map((issue, idx) => (
-                  <p key={idx} style={{ fontSize: '12px', color: '#7f1d1d', margin: '4px 0' }}>
-                    &bull; {issue}
-                  </p>
-                ))}
-              </div>
-            )}
-
-            {/* Listado de Advertencias */}
-            {analysis.warnings.length > 0 && (
-              <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '8px', padding: '12px', marginBottom: '12px' }}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#b45309', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <AlertTriangle size={14} /> Sugerencias técnicas:
-                </div>
-                {analysis.warnings.map((warn, idx) => (
-                  <p key={idx} style={{ fontSize: '12px', color: '#92400e', margin: '4px 0' }}>
-                    &bull; {warn}
-                  </p>
-                ))}
-              </div>
-            )}
-
-            {analysis.isCompatible && analysis.issues.length === 0 && (
-              <p style={{ fontSize: '13px', color: '#047857' }}>
-                Todos los componentes seleccionados poseen sockets, ranuras de memoria y voltajes coordinados para encender sin inconvenientes.
-              </p>
-            )}
-          </div>
-
-          {/* Card 2: Análisis de Cuello de Botella (Bottleneck Engine) */}
-          <div
-            style={{
-              background: '#ffffff',
-              borderRadius: '14px',
-              border: '1px solid var(--border)',
-              padding: '20px',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.04)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Gauge size={20} color="var(--primary)" />
-                <h3 style={{ fontSize: '15px', fontWeight: 800, color: 'var(--navy)' }}>
-                  Cuello de Botella (CPU vs GPU)
-                </h3>
-              </div>
-              <span
-                style={{
-                  fontSize: '12px',
-                  fontWeight: 800,
-                  color: analysis.bottleneck.percentage <= 10 ? '#10b981' : analysis.bottleneck.percentage <= 20 ? '#f59e0b' : '#ef4444',
-                  background: analysis.bottleneck.percentage <= 10 ? '#ecfdf5' : analysis.bottleneck.percentage <= 20 ? '#fffbeb' : '#fef2f2',
-                  padding: '3px 8px',
-                  borderRadius: '6px',
-                }}
-              >
-                {selectedParts.cpu && selectedParts.gpu ? `${analysis.bottleneck.percentage}% de impacto` : 'Pendiente'}
-              </span>
-            </div>
-
-            {selectedParts.cpu && selectedParts.gpu ? (
-              <>
-                <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
-                  <div
-                    style={{
-                      width: `${100 - analysis.bottleneck.percentage}%`,
-                      height: '100%',
-                      background: analysis.bottleneck.percentage <= 10 ? '#10b981' : analysis.bottleneck.percentage <= 20 ? '#f59e0b' : '#ef4444',
-                      transition: 'width 0.3s ease',
-                    }}
-                  />
-                </div>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--navy)', marginBottom: '4px' }}>
-                  {analysis.bottleneck.type}
-                </div>
-                <p style={{ fontSize: '12px', color: 'var(--text-muted)', lineHeight: '1.4' }}>
-                  {analysis.bottleneck.description}
-                </p>
-                {analysis.bottleneck.recommendation && (
-                  <p style={{ fontSize: '11px', color: 'var(--primary-dark)', marginTop: '6px', background: 'rgba(0,142,204,0.06)', padding: '6px 8px', borderRadius: '6px' }}>
-                    💡 <strong>Tip NexoPC:</strong> {analysis.bottleneck.recommendation}
-                  </p>
-                )}
-              </>
-            ) : (
-              <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-                Selecciona tanto un Procesador como una Tarjeta Gráfica para calcular la sincronización de cuadros por segundo (FPS).
-              </p>
-            )}
-
-            {/* Consumo Eléctrico Estimado */}
-            <div style={{ marginTop: '16px', paddingTop: '14px', borderTop: '1px dashed var(--border)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '4px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Consumo Estimado (TDP):</span>
-                <strong style={{ color: 'var(--navy)' }}>~{analysis.estimatedWatts} Watts</strong>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Fuente Recomendada:</span>
-                <strong style={{ color: 'var(--primary)' }}>&ge; {analysis.recommendedPsuWatts} Watts</strong>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 3: Total y Botón de Compra */}
+          {/* Card: Total y Botón de Compra */}
           <div
             style={{
               background: '#0f172a',
@@ -669,16 +390,16 @@ export default function PcBuilderPage({ onNavigate, initialProduct, onClearIniti
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <button
                 onClick={handleAddAllToCart}
-                disabled={selectedCount === 0 || !analysis.isCompatible}
+                disabled={selectedCount === 0}
                 style={{
-                  background: selectedCount === 0 || !analysis.isCompatible ? '#475569' : '#008ecc',
+                  background: selectedCount === 0 ? '#475569' : '#008ecc',
                   color: '#fff',
                   border: 'none',
                   padding: '14px',
                   borderRadius: '10px',
                   fontSize: '14px',
                   fontWeight: 700,
-                  cursor: selectedCount === 0 || !analysis.isCompatible ? 'not-allowed' : 'pointer',
+                  cursor: selectedCount === 0 ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
