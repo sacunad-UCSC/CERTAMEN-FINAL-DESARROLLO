@@ -1,4 +1,8 @@
 import random
+import re
+import unicodedata
+import urllib.request
+import json
 """
 NexoPC - Servidor de Hosting y API en FastAPI (Python)
 Plataforma Segura de Venta y Cotización de Hardware Gamer
