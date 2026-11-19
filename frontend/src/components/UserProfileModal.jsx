@@ -11,6 +11,7 @@ export default function UserProfileModal({
   onOpenProductDetail,
   onExploreProducts,
   newOrderAlert = null,
+  embedded = false,
 }) {
   const { user, token, logout } = useAuth();
   const [activeTab, setActiveTab] = useState(initialTab || 'orders'); // 'orders', 'profile'
@@ -46,164 +47,74 @@ export default function UserProfileModal({
 
   if (!user) return null;
 
-  return (
+  const content = (
     <div
       style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.65)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        zIndex: 2000,
+        background: '#ffffff',
+        borderRadius: '16px',
+        width: '100%',
+        maxWidth: embedded ? '100%' : '640px',
+        maxHeight: embedded ? 'none' : '88vh',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px',
-        animation: 'fadeIn 0.2s ease',
+        flexDirection: 'column',
+        boxShadow: embedded ? '0 4px 16px rgba(0,0,0,0.04)' : '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
+        overflow: 'hidden',
+        position: 'relative',
+        border: '1px solid #e2e8f0',
       }}
-      onClick={onClose}
+      onClick={(e) => e.stopPropagation()}
     >
+      {/* Cabecera de Usuario */}
       <div
         style={{
-          background: '#ffffff',
-          borderRadius: '16px',
-          maxWidth: '640px',
-          width: '100%',
-          maxHeight: '88vh',
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)',
-          overflow: 'hidden',
+          background: 'linear-gradient(135deg, #0d284f 0%, #1e293b 100%)',
+          color: '#ffffff',
+          padding: '24px',
           position: 'relative',
-          border: '1px solid #e2e8f0',
         }}
-        onClick={(e) => e.stopPropagation()}
       >
-        {/* Barra Superior Estilo Ventana Flotante */}
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #09152b 0%, #0d284f 60%, #004b75 100%)',
-            color: '#ffffff',
-            padding: '12px 18px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
-        >
-          {/* Controles estilo ventana (macOS/Windows) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span
-              onClick={onClose}
-              style={{
-                width: '12px',
-                height: '12px',
-                borderRadius: '50%',
-                background: '#ef4444',
-                cursor: 'pointer',
-                display: 'inline-block',
-              }}
-              title="Cerrar ventana"
-            />
-            <span
-              style={{
-                width: '12px',
-                height: '12px',
-                borderRadius: '50%',
-                background: '#f59e0b',
-                display: 'inline-block',
-                opacity: 0.8,
-              }}
-              title="Minimizar"
-            />
-            <span
-              style={{
-                width: '12px',
-                height: '12px',
-                borderRadius: '50%',
-                background: '#10b981',
-                display: 'inline-block',
-                opacity: 0.8,
-              }}
-              title="Maximizar"
-            />
-            <span style={{ fontSize: '12px', fontWeight: 700, color: '#94a3b8', marginLeft: '6px' }}>
-              Ventana de Usuario & Compras &bull; NexoPC
-            </span>
-          </div>
-
-          <button
-            onClick={onClose}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div
             style={{
-              background: 'rgba(255, 255, 255, 0.15)',
-              border: 'none',
+              width: '56px',
+              height: '56px',
               borderRadius: '50%',
-              width: '28px',
-              height: '28px',
+              background: 'linear-gradient(135deg, var(--primary) 0%, #38bdf8 100%)',
+              color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'pointer',
-              color: '#ffffff',
-              transition: 'background 0.2s ease',
+              fontSize: '22px',
+              fontWeight: 800,
+              boxShadow: '0 4px 14px rgba(0, 142, 204, 0.4)',
             }}
-            title="Cerrar ventana"
           >
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* Cabecera de Usuario */}
-        <div
-          style={{
-            background: 'linear-gradient(135deg, #0d284f 0%, #1e293b 100%)',
-            color: '#ffffff',
-            padding: '20px 24px',
-            position: 'relative',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div
+            {user.name.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h2 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#ffffff' }}>{user.name}</h2>
+            <p style={{ fontSize: '13px', color: '#cbd5e1', margin: '2px 0 6px 0' }}>{user.email}</p>
+            <span
               style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--primary) 0%, #38bdf8 100%)',
-                color: '#ffffff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '22px',
+                background: user.role === 'Administrador' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(0, 142, 204, 0.25)',
+                color: user.role === 'Administrador' ? '#fca5a5' : '#7dd3fc',
+                border: user.role === 'Administrador' ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(0, 142, 204, 0.4)',
+                padding: '3px 10px',
+                borderRadius: '12px',
+                fontSize: '11px',
                 fontWeight: 800,
-                boxShadow: '0 4px 14px rgba(0, 142, 204, 0.4)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
               }}
             >
-              {user.name.charAt(0).toUpperCase()}
-            </div>
-            <div>
-              <h2 style={{ fontSize: '19px', fontWeight: 800, margin: 0, color: '#ffffff' }}>{user.name}</h2>
-              <p style={{ fontSize: '13px', color: '#cbd5e1', margin: '2px 0 6px 0' }}>{user.email}</p>
-              <span
-                style={{
-                  background: user.role === 'Administrador' ? 'rgba(239, 68, 68, 0.25)' : 'rgba(0, 142, 204, 0.25)',
-                  color: user.role === 'Administrador' ? '#fca5a5' : '#7dd3fc',
-                  border: user.role === 'Administrador' ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(0, 142, 204, 0.4)',
-                  padding: '3px 10px',
-                  borderRadius: '12px',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-              >
-                <ShieldCheck size={12} /> {user.role}
-              </span>
-            </div>
+              <ShieldCheck size={12} /> {user.role}
+            </span>
           </div>
         </div>
+      </div>
 
-        {/* Pestañas de Navegación del Modal */}
+      {/* Pestañas de Navegación del Modal */}
         <div style={{ display: 'flex', borderBottom: '1px solid #e2e8f0', background: '#f8fafc' }}>
           <button
             onClick={() => setActiveTab('orders')}
@@ -544,6 +455,30 @@ export default function UserProfileModal({
           )}
         </div>
       </div>
+    );
+
+  if (embedded) {
+    return content;
+  }
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(15, 23, 42, 0.65)',
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        zIndex: 2000,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '16px',
+        animation: 'fadeIn 0.2s ease',
+      }}
+      onClick={onClose}
+    >
+      {content}
     </div>
   );
 }

@@ -411,12 +411,12 @@ export default function App() {
             </div>
           </div>
         ) : pageViewMode === 'profile' ? (
-          /* VISTA DEDICADA DE PERFIL & MIS COMPRAS (FORMATO PESTAÑA / VENTANA COMPLETA) */
+          /* VISTA DEDICADA DE PERFIL & MIS COMPRAS (FORMATO PESTAÑA / VENTANA COMPLETA IDÉNTICA AL CARRO) */
           <div style={{ background: '#f8fafc', minHeight: '85vh', padding: '30px 20px 60px' }}>
             <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--navy)', margin: 0 }}>
-                  Panel de Usuario &bull; Mis Compras & Pedidos
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+                <h1 style={{ fontSize: '28px', fontWeight: 800, color: 'var(--navy)', margin: 0 }}>
+                  Mi Cuenta &bull; Mis Compras & Pedidos
                 </h1>
                 <button
                   className="btn-secondary"
@@ -435,16 +435,16 @@ export default function App() {
                     fontSize: '13px',
                   }}
                 >
-                  &larr; Volver a la Tienda
+                  &larr; Continuar Comprando
                 </button>
               </div>
 
               {!user ? (
-                <div style={{ background: '#fff', padding: '50px 20px', borderRadius: '16px', textAlign: 'center', border: '1px solid #e2e8f0' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--navy)', marginBottom: '8px' }}>
+                <div style={{ background: '#fff', padding: '60px 20px', borderRadius: '16px', textAlign: 'center', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(0,0,0,0.03)' }}>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--navy)', marginBottom: '8px' }}>
                     Debes iniciar sesión para consultar tus pedidos
                   </h3>
-                  <p style={{ color: '#64748b', marginBottom: '20px' }}>
+                  <p style={{ color: '#64748b', marginBottom: '24px' }}>
                     Accede a tu cuenta con JWT para ver tu historial de compras y estado de envíos.
                   </p>
                   <button className="btn-primary" onClick={() => setShowLoginModal(true)}>
@@ -453,6 +453,7 @@ export default function App() {
                 </div>
               ) : (
                 <UserProfileModal
+                  embedded={true}
                   initialTab={profileInitialTab}
                   newOrderAlert={newOrderAlert}
                   onClose={() => {
