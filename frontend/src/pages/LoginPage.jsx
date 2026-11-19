@@ -50,13 +50,6 @@ export default function LoginPage({ onClose, onSuccess }) {
     }
   };
 
-  const handleDemoFill = (demoEmail, demoPass) => {
-    setIsLogin(true);
-    setEmail(demoEmail);
-    setPassword(demoPass);
-    setError('');
-  };
-
   return (
     <div
       style={{
@@ -178,67 +171,6 @@ export default function LoginPage({ onClose, onSuccess }) {
               />
             </div>
 
-            {/* Credenciales de Acceso Rápido para Defensa */}
-            <div
-              style={{
-                width: '100%',
-                background: 'rgba(255,255,255,0.65)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)',
-                borderRadius: '14px',
-                padding: '12px 14px',
-                border: '1px solid rgba(255,255,255,0.7)',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
-                <ShieldCheck size={16} color="var(--primary)" />
-                <strong style={{ fontSize: '11px', color: 'var(--navy)', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                  Acceso Rápido:
-                </strong>
-              </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  type="button"
-                  onClick={() => handleDemoFill('admin@pcnfactory.cl', 'AdminPassword2026!')}
-                  style={{
-                    flex: 1,
-                    padding: '8px',
-                    border: '1px solid rgba(254,202,202,0.9)',
-                    background: 'rgba(254,242,242,0.75)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    borderRadius: '8px',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    color: '#b91c1c',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  Admin
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDemoFill('cliente@ucsc.cl', 'UserPassword2026!')}
-                  style={{
-                    flex: 1,
-                    padding: '8px',
-                    border: '1px solid rgba(191,219,254,0.9)',
-                    background: 'rgba(239,246,255,0.75)',
-                    backdropFilter: 'blur(8px)',
-                    WebkitBackdropFilter: 'blur(8px)',
-                    borderRadius: '8px',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    color: '#1d4ed8',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  Cliente
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 

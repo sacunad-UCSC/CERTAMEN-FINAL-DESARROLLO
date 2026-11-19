@@ -622,29 +622,62 @@ def ask_chatbot(data: ChatbotAskRequest):
             "options": ["¿Qué tarjetas gráficas tienen disponibles?", "¿Tienen procesadores Ryzen 7 o Intel i9?", "Solicitar contacto con un ejecutivo"]
         }
 
-    # 2. Primero: Consulta a FAQs de la Base de Datos NoSQL
+    # 2. Primero: Consulta a FAQs de la Base de Datos NoSQL con coincidencia inteligente y flexible
+    import unicodedata
+
+    def strip_accents(text):
+        if not text:
+            return ""
+        norm = unicodedata.normalize("NFD", text.lower())
+        without_accent = "".join(c for c in norm if unicodedata.category(c) != "Mn")
+        return re.sub(r"[^\w\s]", " ", without_accent).strip()
+
+    q_clean = strip_accents(q)
+    stopwords_es = {"que", "como", "cual", "cuales", "donde", "cuando", "por", "para", "los", "las", "con", "una", "uno", "unos", "unas", "del", "tienen", "tiene"}
+    q_words = [w for w in q_clean.split() if len(w) > 2 and w not in stopwords_es]
+    q_words_all = [w for w in q_clean.split() if len(w) > 2]
+
     faqs = list(db["preguntas_frecuentes"].find({"activa": True}))
+    best_faq = None
+    best_score = 0
+
     for f in faqs:
-        pregunta = f.get("pregunta", "").lower()
-        palabras = f.get("palabrasClave", [])
-        # Coincidencia exacta por palabras clave completas o similitud de frase
-        palabras_usuario = set(q.replace('?', '').replace('¿', '').split())
-        palabras_clave_set = set([p.lower() for p in palabras])
-        
-        # Debe coincidir al menos una palabra clave exacta o la pregunta
-        tiene_palabra_clave = bool(palabras_usuario.intersection(palabras_clave_set))
-        if tiene_palabra_clave or (len(pregunta) > 8 and (pregunta in q or q in pregunta)):
-            return {
-                "success": True,
-                "answer": f.get("respuesta", ""),
-                "category": f.get("categoria", ""),
-                "options": [
-                    "¿Qué garantía tienen las GPUs?",
-                    "¿Tiempos de despacho a regiones?",
-                    "¿Cuáles son los métodos de pago?",
-                    "Solicitar contacto con un ejecutivo"
-                ]
-            }
+        f_pregunta = strip_accents(f.get("pregunta", ""))
+        f_palabras = [strip_accents(p) for p in f.get("palabrasClave", []) if p]
+
+        # 1. Coincidencia directa o de subfrase
+        if f_pregunta and (f_pregunta in q_clean or q_clean in f_pregunta):
+            best_faq = f
+            break
+
+        # 2. Coincidencia por palabras clave registradas
+        tiene_palabra_clave = any(kw in q_clean for kw in f_palabras if len(kw) > 2)
+        if tiene_palabra_clave:
+            best_faq = f
+            break
+
+        # 3. Coincidencia por superposición de palabras significativas
+        f_words = [w for w in f_pregunta.split() if len(w) > 2 and w not in stopwords_es]
+        if f_words and q_words:
+            matched = set(q_words).intersection(set(f_words))
+            score = len(matched) / max(len(f_words), 1)
+            # Si coinciden palabras clave esenciales como 'redes', 'garantia', 'envio', 'despacho', 'pago'
+            if len(matched) >= 1 and score > best_score:
+                best_score = score
+                best_faq = f
+
+    if best_faq and (best_score >= 0.25 or best_faq is not None):
+        return {
+            "success": True,
+            "answer": best_faq.get("respuesta", ""),
+            "category": best_faq.get("categoria", ""),
+            "options": [
+                "¿Qué garantía tienen las GPUs?",
+                "¿Tiempos de despacho a regiones?",
+                "¿Cuáles son los métodos de pago?",
+                "Solicitar contacto con un ejecutivo"
+            ]
+        }
 
     # 3. Búsqueda y Recomendación de Productos en Catálogo MongoDB (Sales Agent Catalog Search)
     category_map = {
@@ -759,10 +792,16 @@ def get_all_faqs_admin(user_payload: dict = Depends(get_current_user)):
 
 @app.post("/api/admin/faqs", tags=["Chatbot Inteligente"])
 def upsert_faq(data: UpsertFaqRequest, user_payload: dict = Depends(get_current_user)):
+    # Extraer palabras clave de la pregunta (palabras significativas de más de 3 letras)
+    stopwords = {"que", "como", "cual", "cuales", "donde", "cuando", "por", "para", "los", "las", "con", "una", "uno", "unos", "unas", "del"}
+    words = [re.sub(r"[^\w]", "", w.lower()) for w in data.question.split()]
+    keywords = [w for w in words if len(w) > 3 and w not in stopwords]
+    
     doc = {
         "categoria": data.category,
         "pregunta": data.question,
         "respuesta": data.answer,
+        "palabrasClave": keywords,
         "activa": True,
         "createdAt": datetime.datetime.utcnow().isoformat()
     }
